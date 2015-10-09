@@ -89,7 +89,7 @@ public class IntegrativoCBRApplication implements StandardCBRApplication {
 		ob.initWithOutReasoner();
 		
 		OntologyDocument mainOnto = new OntologyDocument(basePath + "TesteGryphon.owl");
-		List<OntologyDocument> subOntologies = new ArrayList<>();
+		List<OntologyDocument> subOntologies = new ArrayList<OntologyDocument>();
 		subOntologies.add(new OntologyDocument(baseSourcesPath + "btl2.owl"));
 		subOntologies.add(new OntologyDocument(baseSourcesPath + "chebi_homocysteine.owl"));
 		subOntologies.add(new OntologyDocument(baseSourcesPath + "DiseaseList.owl"));

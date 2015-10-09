@@ -50,7 +50,7 @@ public class GryphonResultUtil {
 		JSONObject jsonObj = new JSONObject(readFile(resultFile));
 		JSONObject results = jsonObj.getJSONObject("results");
 		JSONArray bindings = results.getJSONArray("bindings");
-		Set<GryphonResult> resultList = new HashSet<>();
+		Set<GryphonResult> resultList = new HashSet<GryphonResult>();
 
 		System.out.println("List of Cases:");
 		for (int i = 0; i < bindings.length(); i++) {

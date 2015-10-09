@@ -18,8 +18,8 @@ import es.ucm.fdi.gaia.ontobridge.OntoBridge;
 
 public class GryphonConnector implements Connector {
 
-	private Set<CBRCase> cbrCaseList = new HashSet<>();
-	private Set<String> subClassesSet = new HashSet<>();
+	private Set<CBRCase> cbrCaseList = new HashSet<CBRCase>();
+	private Set<String> subClassesSet = new HashSet<String>();
 	private StringBuilder indentation = new StringBuilder();
 	
 	public GryphonConnector(String klass) {
