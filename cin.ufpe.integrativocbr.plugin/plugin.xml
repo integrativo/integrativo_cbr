@@ -20,5 +20,15 @@
              value="cin.ufpe.integrativocbr.plugin.OWLClassExpressionEditorViewComponent">
        </class>
     </extension>
+    <extension
+          id="integrativocbr.prefs"
+          point="org.protege.editor.core.application.preferencespanel">
+       <label
+             value="Integrativo CBR">
+       </label>
+       <class
+             value="cin.ufpe.integrativocbr.plugin.PreferencesPane">
+       </class>
+    </extension>
 
 </plugin>
