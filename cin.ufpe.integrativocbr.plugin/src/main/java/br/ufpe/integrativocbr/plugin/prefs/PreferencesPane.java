@@ -1,4 +1,4 @@
-package cin.ufpe.integrativocbr.plugin;
+package br.ufpe.integrativocbr.plugin.prefs;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -13,6 +13,8 @@ import javax.swing.JPanel;
 import javax.swing.JTable;
 
 import org.protege.editor.owl.ui.preferences.OWLPreferencesPanel;
+
+import br.ufpe.integrativocbr.plugin.DatabaseDialog;
 
 public class PreferencesPane extends OWLPreferencesPanel {
 

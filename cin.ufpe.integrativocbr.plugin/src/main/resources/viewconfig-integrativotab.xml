@@ -10,7 +10,7 @@
 
         <CNode>
             <Component label="Integrativo CBR">
-                <Property id="pluginId" value="cin.ufpe.integrativocbr.plugin.OWLClassExpressionEditorViewComponent"/>
+                <Property id="pluginId" value="br.ufpe.integrativocbr.plugin.OWLClassExpressionEditorViewComponent"/>
             </Component>
         </CNode>
 

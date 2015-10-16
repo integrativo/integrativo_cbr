@@ -8,6 +8,6 @@
 	<classpathentry combineaccessrules="false" kind="src" path="/org.protege.common"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/org.protege.editor.core.application"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/org.semanticweb.owl.owlapi"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/cin.ufpe.integrativocbr.core"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/br.ufpe.integrativocbr.core"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

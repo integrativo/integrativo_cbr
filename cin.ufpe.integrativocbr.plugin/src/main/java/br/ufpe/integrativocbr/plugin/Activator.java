@@ -1,4 +1,4 @@
-package cin.ufpe.integrativocbr.plugin;
+package br.ufpe.integrativocbr.plugin;
 
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;

@@ -17,7 +17,7 @@
              value="Integrativo CBR">
        </label>
        <class
-             value="cin.ufpe.integrativocbr.plugin.OWLClassExpressionEditorViewComponent">
+             value="br.ufpe.integrativocbr.plugin.OWLClassExpressionEditorViewComponent">
        </class>
     </extension>
     <extension
@@ -27,7 +27,7 @@
              value="Integrativo CBR">
        </label>
        <class
-             value="cin.ufpe.integrativocbr.plugin.PreferencesPane">
+             value="br.ufpe.integrativocbr.plugin.prefs.PreferencesPane">
        </class>
     </extension>
 

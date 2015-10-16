@@ -1,4 +1,4 @@
-package cin.ufpe.integrativocbr.plugin;
+package br.ufpe.integrativocbr.plugin;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
