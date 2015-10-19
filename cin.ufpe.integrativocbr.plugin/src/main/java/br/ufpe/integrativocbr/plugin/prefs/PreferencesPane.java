@@ -5,6 +5,7 @@ import java.awt.Color;
 import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.List;
 
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
@@ -24,6 +25,9 @@ public class PreferencesPane extends OWLPreferencesPanel {
 	private JTable table = new JTable();
 	private JPanel buttonsPanel = new JPanel();
 	
+	private List<DatabasePreference> databasePreferences =
+			IntegrativoPreferences.getInstance().readDatabasePrefsList();
+
 	@Override
 	public void initialise() throws Exception {
 		setLayout(new BorderLayout(10, 10));
@@ -57,7 +61,7 @@ public class PreferencesPane extends OWLPreferencesPanel {
 
 		mainPanel.add(buttonsPanel, BorderLayout.SOUTH);
 		
-}
+	}
 
 	@Override
 	public void dispose() throws Exception {
@@ -67,12 +71,18 @@ public class PreferencesPane extends OWLPreferencesPanel {
 
 	@Override
 	public void applyChanges() {
-		// TODO Auto-generated method stub
+		// TODO Auto-generated method stub/
 		
 	}
 	
 	private void addDatabaseButtonActionPerformed() {
-		new DatabaseDialog(this).setVisible(true);
+		DatabaseDialog dbDialog = new DatabaseDialog(this);
+		dbDialog.setVisible(true);
+		if (dbDialog.isOk()) {
+			dbDialog.setVisible(true);
+			databasePreferences.add(dbDialog.createDatabasePreference());
+			IntegrativoPreferences.getInstance().writeDatabasePrefsList(databasePreferences);
+		}
 	}
 
 	private void removeDatabaseButtonActionPerformed() {

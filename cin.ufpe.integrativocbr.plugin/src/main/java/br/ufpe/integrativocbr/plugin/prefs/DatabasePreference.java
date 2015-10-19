@@ -1,11 +1,15 @@
 package br.ufpe.integrativocbr.plugin.prefs;
 
-public class DatabasePreference {
+import java.io.Serializable;
 
+public class DatabasePreference implements Serializable {
+
+	private static final long serialVersionUID = -2793480993137224165L;
+	
 	private String host;
 	private int port;
 	private String userName;
-	private char[] password;
+	private char[] userPassword;
 	private String databaseName;
 
 	
@@ -33,12 +37,12 @@ public class DatabasePreference {
 		this.userName = userName;
 	}
 
-	public char[] getPassword() {
-		return password;
+	public char[] getUserPassword() {
+		return userPassword;
 	}
 
-	public void setPassword(char[] password) {
-		this.password = password;
+	public void setUserPassword(char[] password) {
+		this.userPassword = password;
 	}
 
 	public String getDatabaseName() {
