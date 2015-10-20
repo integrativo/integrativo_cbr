@@ -11,13 +11,11 @@ import java.util.List;
 import org.protege.editor.core.prefs.Preferences;
 import org.protege.editor.core.prefs.PreferencesManager;
 
-
 public class IntegrativoPreferences {
 
 	private static IntegrativoPreferences instance;
 	private static final String SET = "br.ufpe.integrativocbr.plugin";
 	private static final String DATABASES = "DATABASES";
-	private static final String LIST = "LIST";
 
 	public static synchronized IntegrativoPreferences getInstance() {
 		if (instance == null) {
@@ -32,8 +30,7 @@ public class IntegrativoPreferences {
 	
 	@SuppressWarnings("unchecked")
 	public List<DatabasePreference> readDatabasePrefsList() {
-		byte[] byteIn = IntegrativoPreferences.getInstance()
-				.getDatabasesPrefs().getByteArray(LIST, null);
+		byte[] byteIn = getDatabasesPrefs().getByteArray(DATABASES, null);
 		if (byteIn != null) {
 			try {
 				ObjectInputStream objectIn = new ObjectInputStream(new ByteArrayInputStream(byteIn));
