@@ -10,3 +10,5 @@ Require-Bundle: org.protege.editor.owl;bundle-version="4.3.0",
  org.protege.editor.core.application;bundle-version="4.2.0",
  org.semanticweb.owl.owlapi;bundle-version="3.4.5",
  gryphon-framework;bundle-version="0.0.1"
+Bundle-ClassPath: lib/owl2sparql-core-0.1-20150919.135827-1.jar,
+ .

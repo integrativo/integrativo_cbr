@@ -3,6 +3,7 @@ package br.ufpe.integrativocbr.plugin;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
@@ -20,9 +21,6 @@ import org.protege.editor.owl.ui.clsdescriptioneditor.OWLExpressionChecker;
 import org.protege.editor.owl.ui.view.AbstractOWLViewComponent;
 import org.semanticweb.owlapi.model.OWLClassExpression;
 import org.semanticweb.owlapi.model.OWLException;
-
-import br.ufpe.cin.aac3.gryphon.Gryphon;
-import br.ufpe.cin.aac3.gryphon.GryphonConfig;
 
 import br.ufpe.cin.aac3.gryphon.Gryphon;
 import br.ufpe.cin.aac3.gryphon.GryphonConfig;
@@ -107,26 +105,6 @@ public class OWLClassExpressionEditorViewComponent extends AbstractOWLViewCompon
 		editorPanel.add(expressionEditor, BorderLayout.CENTER);
 		editorPanel.add(createButtonsPanel(), BorderLayout.SOUTH);
 		return editorPanel;
-	}
-
-	private JPanel createButtonsPanel() {
-		JPanel buttonsPanel = new JPanel();
-		JButton gryphonTestButton = new JButton("Gryphon test");
-		gryphonTestButton.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				gryphonTestButtonAction();
-			}
-		});
-		buttonsPanel.add(gryphonTestButton);
-		return buttonsPanel;
-	}
-	
-	private void gryphonTestButtonAction() {
-		GryphonConfig.setWorkingDirectory(new File("integrationExample"));
-		GryphonConfig.setLogEnabled(true);
-		GryphonConfig.setShowLogo(true);
-		Gryphon.init();
 	}
 	
 	@Override
