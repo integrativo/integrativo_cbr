@@ -10,13 +10,19 @@ import java.io.File;
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JSplitPane;
 
+import org.aksw.owl2sparql.OWLClassExpressionToSPARQLConverter;
 import org.protege.editor.owl.ui.clsdescriptioneditor.ExpressionEditor;
 import org.protege.editor.owl.ui.clsdescriptioneditor.OWLExpressionChecker;
 import org.protege.editor.owl.ui.view.AbstractOWLViewComponent;
 import org.semanticweb.owlapi.model.OWLClassExpression;
+import org.semanticweb.owlapi.model.OWLException;
+
+import br.ufpe.cin.aac3.gryphon.Gryphon;
+import br.ufpe.cin.aac3.gryphon.GryphonConfig;
 
 import br.ufpe.cin.aac3.gryphon.Gryphon;
 import br.ufpe.cin.aac3.gryphon.GryphonConfig;
@@ -25,6 +31,8 @@ public class OWLClassExpressionEditorViewComponent extends AbstractOWLViewCompon
 
 	private static final long serialVersionUID = 1L;
 
+	private ExpressionEditor<OWLClassExpression> expressionEditor;
+	
 	@Override
 	protected void initialiseOWLView() throws Exception {
 		setLayout(new BorderLayout(10, 10));
@@ -40,11 +48,56 @@ public class OWLClassExpressionEditorViewComponent extends AbstractOWLViewCompon
 		resultsPanel.add(new JLabel("Results"));
 		return resultsPanel;
 	}
+	
+	private JPanel createButtonsPanel() {
+		JButton testSparqlConversionButton = new JButton();
+		testSparqlConversionButton.setText("Test Sparql Conversion");
+		testSparqlConversionButton.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				testSparqlConversionButtonAction();
+			}
+		});
+		
+		JButton testGryphonButton = new JButton();
+		testGryphonButton.setText("Teste Gryphon");
+		testGryphonButton.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				testGryphonButtonAction();
+			}
+		});
 
+		JPanel buttonsPanel = new JPanel();
+		buttonsPanel.setLayout(new FlowLayout());
+		buttonsPanel.add(testGryphonButton);
+		return buttonsPanel;
+	}
+	
+	private void testGryphonButtonAction() {
+		System.out.println("*** INIT Test Gryphon");
+		GryphonConfig.setWorkingDirectory(new File("integrationExample"));
+		GryphonConfig.setLogEnabled(true);
+		GryphonConfig.setShowLogo(true);
+		Gryphon.init();
+		System.out.println("*** END Test Gryphon");
+	}
+
+	private void testSparqlConversionButtonAction() {
+		OWLClassExpressionToSPARQLConverter converter = new OWLClassExpressionToSPARQLConverter();
+		String text;
+		try {
+			text = converter.convert(expressionEditor.createObject(), "?x", false);
+			JOptionPane.showMessageDialog(this, "SPARQL conversion:\n" + text);
+		} catch (OWLException e) {
+			e.printStackTrace();
+		}
+	}
+	
 	private JPanel createQueryPanel() {
 		JPanel editorPanel = new JPanel(new BorderLayout());
 		OWLExpressionChecker<OWLClassExpression> checker = getOWLModelManager().getOWLExpressionCheckerFactory().getOWLClassExpressionChecker();
-		ExpressionEditor<OWLClassExpression> expressionEditor = new ExpressionEditor<OWLClassExpression>(getOWLEditorKit(), checker);
+		expressionEditor = new ExpressionEditor<OWLClassExpression>(getOWLEditorKit(), checker);
 
 		editorPanel.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createTitledBorder(BorderFactory.createLineBorder(
                 Color.LIGHT_GRAY), "DL Query (class expression)"), BorderFactory.createEmptyBorder(3, 3, 3, 3)));
