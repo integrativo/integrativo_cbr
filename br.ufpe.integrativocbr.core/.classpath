@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="src" path="src/main/java"/>
+	<classpathentry kind="src" path="src/main/resources"/>
+	<classpathentry exported="true" kind="lib" path="libs/maven/commons-codec-1.6.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/maven/httpclient-4.2.3.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/maven/httpcore-4.2.2.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/maven/jcl-over-slf4j-1.6.4.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/maven/jcolibri-2.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/maven/jena-arq-2.11.0.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/maven/jena-core-2.11.0.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/maven/jena-iri-1.0.0.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/maven/json-20140107.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/maven/log4j-1.2.16.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/maven/ontobridge-latest.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/maven/slf4j-api-1.6.4.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/maven/slf4j-log4j12-1.6.4.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/maven/xercesImpl-2.11.0.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/maven/xml-apis-1.4.01.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/jcolibri2.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/ontobridge.jar"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.6"/>
+	<classpathentry kind="con" path="org.eclipse.pde.core.requiredPlugins"/>
+	<classpathentry kind="output" path="bin"/>
+</classpath>

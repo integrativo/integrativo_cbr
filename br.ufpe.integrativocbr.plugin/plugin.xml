@@ -1,0 +1,34 @@
+<?xml version="1.0" ?>
+
+<plugin>
+    
+    <extension id="IntegrativoTab"
+               point="org.protege.editor.core.application.WorkspaceTab">
+        <label value="Integrativo CBR"/>
+        <class value="org.protege.editor.owl.ui.OWLWorkspaceViewsTab"/>
+        <editorKitId value="OWLEditorKit"/>
+        <index value="I"/>
+        <defaultViewConfigFileName value="viewconfig-integrativotab.xml"/>
+    </extension>
+    <extension
+          id="OWLClassExpressionEditorViewComponent"
+          point="org.protege.editor.core.application.ViewComponent">
+       <label
+             value="Integrativo CBR">
+       </label>
+       <class
+             value="br.ufpe.integrativocbr.plugin.OWLClassExpressionEditorViewComponent">
+       </class>
+    </extension>
+    <extension
+          id="integrativocbr.prefs"
+          point="org.protege.editor.core.application.preferencespanel">
+       <label
+             value="Integrativo CBR">
+       </label>
+       <class
+             value="br.ufpe.integrativocbr.plugin.prefs.PreferencesPane">
+       </class>
+    </extension>
+
+</plugin>
