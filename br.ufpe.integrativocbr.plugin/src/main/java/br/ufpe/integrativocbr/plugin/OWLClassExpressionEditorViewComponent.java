@@ -66,9 +66,20 @@ public class OWLClassExpressionEditorViewComponent extends AbstractOWLViewCompon
 			}
 		});
 
+		JButton testOntologiesButton = new JButton();
+		testGryphonButton.setText("Teste Gryphon");
+		testGryphonButton.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				testOntologiesButtonAction();
+			}
+		});
+
 		JPanel buttonsPanel = new JPanel();
 		buttonsPanel.setLayout(new FlowLayout());
 		buttonsPanel.add(testGryphonButton);
+		buttonsPanel.add(testSparqlConversionButton);
+		buttonsPanel.add(testOntologiesButton);
 		return buttonsPanel;
 	}
 	
@@ -90,6 +101,11 @@ public class OWLClassExpressionEditorViewComponent extends AbstractOWLViewCompon
 		} catch (OWLException e) {
 			e.printStackTrace();
 		}
+	}
+	
+	private void testOntologiesButtonAction() {
+		JOptionPane.showMessageDialog(this, getOWLModelManager().getActiveOntology().toString());
+		JOptionPane.showMessageDialog(this, getOWLModelManager().getActiveOntology().getDirectImports().toString());
 	}
 	
 	private JPanel createQueryPanel() {
