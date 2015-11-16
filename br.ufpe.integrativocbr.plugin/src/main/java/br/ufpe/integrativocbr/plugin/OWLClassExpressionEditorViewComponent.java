@@ -7,6 +7,7 @@ import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
+import java.util.Set;
 
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
@@ -21,15 +22,18 @@ import org.protege.editor.owl.ui.clsdescriptioneditor.OWLExpressionChecker;
 import org.protege.editor.owl.ui.view.AbstractOWLViewComponent;
 import org.semanticweb.owlapi.model.OWLClassExpression;
 import org.semanticweb.owlapi.model.OWLException;
+import org.semanticweb.owlapi.model.OWLOntology;
 
 import br.ufpe.cin.aac3.gryphon.Gryphon;
 import br.ufpe.cin.aac3.gryphon.GryphonConfig;
+import br.ufpe.cin.aac3.gryphon.Gryphon.ResultFormat;
+import br.ufpe.cin.aac3.gryphon.model.Ontology;
 
 public class OWLClassExpressionEditorViewComponent extends AbstractOWLViewComponent {
 
 	private static final long serialVersionUID = 1L;
-
 	private ExpressionEditor<OWLClassExpression> expressionEditor;
+	
 	
 	@Override
 	protected void initialiseOWLView() throws Exception {
@@ -67,19 +71,29 @@ public class OWLClassExpressionEditorViewComponent extends AbstractOWLViewCompon
 		});
 
 		JButton testOntologiesButton = new JButton();
-		testGryphonButton.setText("Teste Gryphon");
-		testGryphonButton.addActionListener(new ActionListener() {
+		testOntologiesButton.setText("Teste Ontologies");
+		testOntologiesButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				testOntologiesButtonAction();
 			}
 		});
 
+		JButton testGryphonQueryButton = new JButton();
+		testGryphonQueryButton.setText("Teste Consulta Gryphon");
+		testGryphonQueryButton.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				testGryphonQueryButtonAction();
+			}
+		});
+		
 		JPanel buttonsPanel = new JPanel();
 		buttonsPanel.setLayout(new FlowLayout());
 		buttonsPanel.add(testGryphonButton);
 		buttonsPanel.add(testSparqlConversionButton);
 		buttonsPanel.add(testOntologiesButton);
+		buttonsPanel.add(testGryphonQueryButton);
 		return buttonsPanel;
 	}
 	
@@ -104,8 +118,56 @@ public class OWLClassExpressionEditorViewComponent extends AbstractOWLViewCompon
 	}
 	
 	private void testOntologiesButtonAction() {
-		JOptionPane.showMessageDialog(this, getOWLModelManager().getActiveOntology().toString());
-		JOptionPane.showMessageDialog(this, getOWLModelManager().getActiveOntology().getDirectImports().toString());
+		OWLOntology onto = getOWLModelManager().getActiveOntology();
+		JOptionPane.showMessageDialog(this, onto.getOWLOntologyManager().getOntologyDocumentIRI(onto));
+
+		Set<OWLOntology> ontoImports = onto.getDirectImports();
+		for (OWLOntology ontoImport : ontoImports) {
+			JOptionPane.showMessageDialog(this, 
+					ontoImport.getOWLOntologyManager().getOntologyDocumentIRI(ontoImport));
+		}
+	}
+	
+	private Ontology createGryphonOntology(OWLOntology onto) {
+		return new Ontology(onto.getOntologyID().getOntologyIRI().toString(),
+				onto.getOWLOntologyManager().getOntologyDocumentIRI(onto).toURI());
+	}
+	
+	private String sparqlQuery() throws OWLException {
+		OWLClassExpressionToSPARQLConverter converter = new OWLClassExpressionToSPARQLConverter();
+		return converter.convert(expressionEditor.createObject(), "?x", false);
+	}
+	
+	private void testGryphonQueryButtonAction() {
+		GryphonConfig.setWorkingDirectory(new File("integrationExample"));
+		GryphonConfig.setLogEnabled(true);
+		GryphonConfig.setShowLogo(true);
+		Gryphon.init();
+
+		OWLOntology globalOnto = getOWLModelManager().getActiveOntology();
+		Gryphon.setGlobalOntology(createGryphonOntology(globalOnto));
+		
+		for (OWLOntology importOnto : globalOnto.getDirectImports()) {
+			Gryphon.addLocalOntology(createGryphonOntology(importOnto));
+		}
+		
+		String sparqlQuery = null;
+		try {
+			sparqlQuery = sparqlQuery();
+		} catch (OWLException e) {
+			e.printStackTrace();
+			JOptionPane.showMessageDialog(this, 
+					"Erro na conversão para SPARQL.\n" + e.getMessage());
+		}
+		
+		if (sparqlQuery != null) {
+			Gryphon.query(sparqlQuery, ResultFormat.JSON);
+			
+			File resultFolder = Gryphon.getResultFolder();
+			for (File file : resultFolder.listFiles()) {
+				JOptionPane.showMessageDialog(this, file.getAbsolutePath());
+			}
+		}
 	}
 	
 	private JPanel createQueryPanel() {
