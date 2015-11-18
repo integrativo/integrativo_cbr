@@ -7,6 +7,7 @@ import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
+import java.util.Collections;
 import java.util.Set;
 
 import javax.swing.BorderFactory;
@@ -21,12 +22,13 @@ import org.protege.editor.owl.ui.clsdescriptioneditor.ExpressionEditor;
 import org.protege.editor.owl.ui.clsdescriptioneditor.OWLExpressionChecker;
 import org.protege.editor.owl.ui.view.AbstractOWLViewComponent;
 import org.semanticweb.owlapi.model.OWLClassExpression;
+import org.semanticweb.owlapi.model.OWLEntity;
 import org.semanticweb.owlapi.model.OWLException;
 import org.semanticweb.owlapi.model.OWLOntology;
 
 import br.ufpe.cin.aac3.gryphon.Gryphon;
-import br.ufpe.cin.aac3.gryphon.GryphonConfig;
 import br.ufpe.cin.aac3.gryphon.Gryphon.ResultFormat;
+import br.ufpe.cin.aac3.gryphon.GryphonConfig;
 import br.ufpe.cin.aac3.gryphon.model.Ontology;
 
 public class OWLClassExpressionEditorViewComponent extends AbstractOWLViewComponent {
@@ -110,7 +112,9 @@ public class OWLClassExpressionEditorViewComponent extends AbstractOWLViewCompon
 		OWLClassExpressionToSPARQLConverter converter = new OWLClassExpressionToSPARQLConverter();
 		String text;
 		try {
-			text = converter.convert(expressionEditor.createObject(), "?x", false);
+			// text = converter.asQuery(expressionEditor.createObject(), "?x").toString();
+			// text = converter.convert(expressionEditor.createObject(), "?x", false);
+			text = converter.asQueryText("?x", expressionEditor.createObject(), Collections.<OWLEntity>emptySet(), false);
 			JOptionPane.showMessageDialog(this, "SPARQL conversion:\n" + text);
 		} catch (OWLException e) {
 			e.printStackTrace();
@@ -135,7 +139,8 @@ public class OWLClassExpressionEditorViewComponent extends AbstractOWLViewCompon
 	
 	private String sparqlQuery() throws OWLException {
 		OWLClassExpressionToSPARQLConverter converter = new OWLClassExpressionToSPARQLConverter();
-		return converter.convert(expressionEditor.createObject(), "?x", false);
+		return converter.asQueryText("?x", expressionEditor.createObject(), Collections.<OWLEntity>emptySet(), false);
+		//return converter.convert(expressionEditor.createObject(), "?x", false);
 	}
 	
 	private void testGryphonQueryButtonAction() {

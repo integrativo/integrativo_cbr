@@ -1,8 +1,22 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
-	<classpathentry exported="true" kind="lib" path="lib/owl2sparql-core-0.1-SNAPSHOT.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/jcolibri2.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/ontobridge.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/maven/commons-codec-1.5.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/maven/guava-18.0.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/maven/httpclient-4.1.2.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/maven/httpcore-4.1.3.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/maven/jena-arq-2.9.1.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/maven/jena-core-2.7.1.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/maven/jena-iri-0.9.1.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/maven/log4j-1.2.16.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/maven/owl2sparql-core-0.1.1-SNAPSHOT.jar" sourcepath="/owl2sparql/src/main/java"/>
+	<classpathentry exported="true" kind="lib" path="libs/maven/owlapi-distribution-3.5.3.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/maven/slf4j-api-1.6.4.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/maven/slf4j-log4j12-1.6.4.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/maven/trove4j-3.0.3.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/maven/xercesImpl-2.10.0.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/maven/xml-apis-1.4.01.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/jcolibri2.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/ontobridge.jar"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.6"/>
 	<classpathentry kind="con" path="org.eclipse.pde.core.requiredPlugins"/>
 	<classpathentry kind="src" path="src/main/java"/>
