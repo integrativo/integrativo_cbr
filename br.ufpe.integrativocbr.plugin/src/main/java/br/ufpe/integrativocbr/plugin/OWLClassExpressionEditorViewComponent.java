@@ -4,6 +4,7 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
+import java.awt.HeadlessException;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
@@ -109,15 +110,11 @@ public class OWLClassExpressionEditorViewComponent extends AbstractOWLViewCompon
 	}
 
 	private void testSparqlConversionButtonAction() {
-		OWLClassExpressionToSPARQLConverter converter = new OWLClassExpressionToSPARQLConverter();
-		String text;
 		try {
-			// text = converter.asQuery(expressionEditor.createObject(), "?x").toString();
-			// text = converter.convert(expressionEditor.createObject(), "?x", false);
-			text = converter.asQueryText("?x", expressionEditor.createObject(), Collections.<OWLEntity>emptySet(), false);
-			JOptionPane.showMessageDialog(this, "SPARQL conversion:\n" + text);
-		} catch (OWLException e) {
+			JOptionPane.showMessageDialog(this, convertToSparqlQuery());
+		} catch (Exception e) {
 			e.printStackTrace();
+			JOptionPane.showMessageDialog(this, "Erro na conversão: " + e.getMessage());
 		}
 	}
 	
@@ -137,14 +134,18 @@ public class OWLClassExpressionEditorViewComponent extends AbstractOWLViewCompon
 				onto.getOWLOntologyManager().getOntologyDocumentIRI(onto).toURI());
 	}
 	
-	private String sparqlQuery() throws OWLException {
+	private String convertToSparqlQuery() throws OWLException {
 		OWLClassExpressionToSPARQLConverter converter = new OWLClassExpressionToSPARQLConverter();
-		return converter.asQueryText("?x", expressionEditor.createObject(), Collections.<OWLEntity>emptySet(), false);
-		//return converter.convert(expressionEditor.createObject(), "?x", false);
+		
+		// to fill internal variables in converter
+		converter.asGroupGraphPattern(expressionEditor.createObject(), "?x");
+		
+		// real conversion
+		return converter.convert(expressionEditor.createObject(), "?x", false);
 	}
 	
 	private void testGryphonQueryButtonAction() {
-		GryphonConfig.setWorkingDirectory(new File("integrationExample"));
+		GryphonConfig.setWorkingDirectory(new File("/home/tisocic/git/GryphonFramework/integrationMScExperiment"));
 		GryphonConfig.setLogEnabled(true);
 		GryphonConfig.setShowLogo(true);
 		Gryphon.init();
@@ -158,7 +159,7 @@ public class OWLClassExpressionEditorViewComponent extends AbstractOWLViewCompon
 		
 		String sparqlQuery = null;
 		try {
-			sparqlQuery = sparqlQuery();
+			sparqlQuery = convertToSparqlQuery();
 		} catch (OWLException e) {
 			e.printStackTrace();
 			JOptionPane.showMessageDialog(this, 
