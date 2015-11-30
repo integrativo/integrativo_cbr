@@ -30,6 +30,7 @@ import org.semanticweb.owlapi.model.OWLOntology;
 import br.ufpe.cin.aac3.gryphon.Gryphon;
 import br.ufpe.cin.aac3.gryphon.Gryphon.ResultFormat;
 import br.ufpe.cin.aac3.gryphon.GryphonConfig;
+import br.ufpe.cin.aac3.gryphon.model.Database;
 import br.ufpe.cin.aac3.gryphon.model.Ontology;
 
 public class OWLClassExpressionEditorViewComponent extends AbstractOWLViewComponent {
@@ -111,7 +112,9 @@ public class OWLClassExpressionEditorViewComponent extends AbstractOWLViewCompon
 
 	private void testSparqlConversionButtonAction() {
 		try {
-			JOptionPane.showMessageDialog(this, convertToSparqlQuery());
+			String sparqlQuery = convertToSparqlQuery();
+			System.out.println(sparqlQuery);
+			JOptionPane.showMessageDialog(this, sparqlQuery);
 		} catch (Exception e) {
 			e.printStackTrace();
 			JOptionPane.showMessageDialog(this, "Erro na conversão: " + e.getMessage());
@@ -145,7 +148,7 @@ public class OWLClassExpressionEditorViewComponent extends AbstractOWLViewCompon
 	}
 	
 	private void testGryphonQueryButtonAction() {
-		GryphonConfig.setWorkingDirectory(new File("/home/tisocic/git/GryphonFramework/integrationMScExperiment"));
+		GryphonConfig.setWorkingDirectory(new File(System.getProperty("user.home"), "/git/GryphonFramework/integrationSWAT4LSPaper"));
 		GryphonConfig.setLogEnabled(true);
 		GryphonConfig.setShowLogo(true);
 		Gryphon.init();
@@ -153,9 +156,8 @@ public class OWLClassExpressionEditorViewComponent extends AbstractOWLViewCompon
 		OWLOntology globalOnto = getOWLModelManager().getActiveOntology();
 		Gryphon.setGlobalOntology(createGryphonOntology(globalOnto));
 		
-		for (OWLOntology importOnto : globalOnto.getDirectImports()) {
-			Gryphon.addLocalOntology(createGryphonOntology(importOnto));
-		}
+		Database localDB = new Database("localhost", 3306, "root", "", "uniprot", Gryphon.DBMS.MySQL);
+		Gryphon.addLocalDatabase(localDB);
 		
 		String sparqlQuery = null;
 		try {
@@ -171,6 +173,7 @@ public class OWLClassExpressionEditorViewComponent extends AbstractOWLViewCompon
 			
 			File resultFolder = Gryphon.getResultFolder();
 			for (File file : resultFolder.listFiles()) {
+				System.out.println(file.getAbsolutePath());
 				JOptionPane.showMessageDialog(this, file.getAbsolutePath());
 			}
 		}
