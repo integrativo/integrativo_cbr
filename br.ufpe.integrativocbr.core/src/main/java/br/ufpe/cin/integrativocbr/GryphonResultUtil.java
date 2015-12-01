@@ -13,8 +13,6 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import br.ufpe.cin.integrativocbr.GryphonResult;
-
 public class GryphonResultUtil {
 	
 	private static final File defaultJsonFile; 
@@ -57,19 +55,17 @@ public class GryphonResultUtil {
 			JSONObject binding = bindings.getJSONObject(i);
 			
 			String[] names = JSONObject.getNames(binding);
-			String label1 = binding.getJSONObject(names[0]).getString("value");
-			String label2 = null;
-			if (names.length > 1) {
-				label2 = binding.getJSONObject(names[1]).getString("value");
+			if (names != null && names.length > 0) {
+				String[] labels = new String[names.length];
+				for (int l = 0; l < names.length; l++) {
+					labels[l] = binding.getJSONObject(names[l]).getString("value");
+					labels[l] = removeParenthesesAndOrganismPrefix(labels[l]);
+				}
+				GryphonResult result = new GryphonResult();
+				result.setTuples(labels);
+				resultList.add(result);
+				System.out.println(result);
 			}
-			
-			GryphonResult result = new GryphonResult();
-			result.setP1(removeParenthesesAndOrganismPrefix(label1));
-			result.setP2(removeParenthesesAndOrganismPrefix(label2));
-			resultList.add(result);
-			
-			System.out.println(result);
-				
 		}
 		System.out.println("Number of Cases from Gryphon: " + resultList.size());
 		return resultList;

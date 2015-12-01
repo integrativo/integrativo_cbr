@@ -13,7 +13,6 @@ import jcolibri.cbraplications.StandardCBRApplication;
 import jcolibri.cbrcore.Attribute;
 import jcolibri.cbrcore.CBRCaseBase;
 import jcolibri.cbrcore.CBRQuery;
-import jcolibri.cbrcore.Connector;
 import jcolibri.exception.ExecutionException;
 import jcolibri.exception.OntologyAccessException;
 import jcolibri.method.retrieve.RetrievalResult;
@@ -26,23 +25,15 @@ import jcolibri.util.OntoBridgeSingleton;
 
 import org.json.JSONException;
 
-import br.ufpe.cin.integrativocbr.CaseDescription;
-import br.ufpe.cin.integrativocbr.GryphonConnector;
-import br.ufpe.cin.integrativocbr.GryphonResult;
-import br.ufpe.cin.integrativocbr.GryphonResultUtil;
-import br.ufpe.cin.integrativocbr.SimilarityResult;
 import es.ucm.fdi.gaia.ontobridge.OntoBridge;
 import es.ucm.fdi.gaia.ontobridge.OntologyDocument;
 
 public class IntegrativoCBRApplication implements StandardCBRApplication {
 
-	private static Connector connector;
-	
 	private CBRCaseBase caseBase;
 	private Map<String, SimilarityResult> similarityResult;
-	
-	private static Double evalResult;
-	private static String classResult;
+	private GryphonConnector currentConnector;
+	private CycleResult cycleResult;
 	
 	@Override
 	public void configure() throws ExecutionException {
@@ -52,7 +43,7 @@ public class IntegrativoCBRApplication implements StandardCBRApplication {
 	@Override
 	public CBRCaseBase preCycle() throws ExecutionException {
 		caseBase = new LinealCaseBase();
-		caseBase.init(connector);
+		caseBase.init(currentConnector);
 		
 //		for (CBRCase c : caseBase.getCases()) {
 //			System.out.println(c);
@@ -72,8 +63,8 @@ public class IntegrativoCBRApplication implements StandardCBRApplication {
 		} else {
 			RetrievalResult result = SelectCases.selectTopKRR(results, 1).iterator().next();
 			CaseDescription caseDescription = (CaseDescription) result.get_case().getDescription();
-			evalResult = result.getEval();
-			classResult = caseDescription.getClassId();
+			
+			cycleResult = new CycleResult(result.getEval(), caseDescription.getClassId());
 		}
 	}
 
@@ -81,7 +72,7 @@ public class IntegrativoCBRApplication implements StandardCBRApplication {
 	public void postCycle() throws ExecutionException {
 	}
 
-	private static OntoBridge configureOntoBridge() {
+	protected OntoBridge configureOntoBridge() {
 		String basePath = IntegrativoCBRApplication.class.getResource("/mscExperiment").getFile() + File.separator;
 		String baseSourcesPath = basePath + "sources/";
 		
@@ -105,85 +96,99 @@ public class IntegrativoCBRApplication implements StandardCBRApplication {
 		return similarityResult;
 	}
 	
-	
-	public static void main(String[] args) throws OntologyAccessException, ExecutionException, JSONException, IOException {
-		configureOntoBridge();
-		
+	public static void executeCBR(String... classes) throws ExecutionException, JSONException, IOException, OntologyAccessException {
 		IntegrativoCBRApplication app = new IntegrativoCBRApplication();
+		app.configureOntoBridge();
 		app.configure();
 		
-		
-//		Q1
-//		===
-//		FIXME old code
-//		System.out.println(">>>> MONOMOLECULARENTITY TREE");
-//		doCycle(app, "http://purl.org/biotop/btl2.owl#MonoMolecularEntity");
-//		System.out.println(">>>> ORGANISM TREE");
-//		doCycle(app, "http://purl.org/biotop/btl2.owl#Organism");
-		
-		// Q2
-		// ===
-		System.out.println(">>>> GO_0008150 TREE");
-		GryphonConnector connectorA = new GryphonConnector("http://purl.obolibrary.org/obo/GO_0008150");
-		System.out.println(">>>> ORGANISM TREE");
-		GryphonConnector connectorB = new GryphonConnector("http://purl.org/biotop/btl2.owl#Organism");
-		
-		// Q3
-		// ===
-//		System.out.println(">>>> GO_0008150 TREE");
-//		GryphonConnector connectorA = new GryphonConnector("http://purl.obolibrary.org/obo/GO_0008150");
-//		System.out.println(">>>> GO_0005575 TREE");
-//		GryphonConnector connectorB = new GryphonConnector("http://purl.obolibrary.org/obo/GO_0005575");
-		
-		// Q4
-		// ===
-//		System.out.println(">>>> GO_0008150 TREE");
-//		GryphonConnector connectorA = new GryphonConnector("http://purl.obolibrary.org/obo/GO_0008150");
-//		System.out.println(">>>> PR_000000001 TREE");
-//		GryphonConnector connectorB = new GryphonConnector("http://purl.obolibrary.org/obo/PR_000000001");
+		GryphonConnector[] connectors = new GryphonConnector[classes.length];
+		for (int i = 0; i < classes.length; i++) {
+			System.out.println(">>>> Initializing connector for class: " + classes[i]);
+			connectors[i] = new GryphonConnector(classes[i]);
+		}
 		
 		CBRQuery query;
-		
 		for (GryphonResult gryphonResult : GryphonResultUtil.readResults()) {
-			// A
-			// ===
-			connector = connectorA;
-			
-			query = new CBRQuery();
-			query.setDescription(new CaseDescription(null, gryphonResult.getP1()));
-			
-			app.preCycle();
-			app.cycle(query);
-			app.postCycle();
-			
-			double evalResultA = evalResult;
-			String classResultA = classResult;
-			
-			// B
-			// ===
-			connector = connectorB;
-			
-			query = new CBRQuery();
-			query.setDescription(new CaseDescription(null, gryphonResult.getP2()));
-			
-			app.preCycle();
-			app.cycle(query);
-			app.postCycle();
-			
-			double evalResultB = evalResult;
-			String classResultB = classResult;
+
+			CycleResult[] cycleResults = new CycleResult[connectors.length];
+			for (int i = 0; i < connectors.length; i++) {
+				query = new CBRQuery();
+				query.setDescription(new CaseDescription(null, gryphonResult.getTuples()[i]));
+				
+				app.setCurrentConnector(connectors[i]);
+				app.preCycle();
+				app.cycle(query);
+				app.postCycle();
+				
+				cycleResults[i] = app.getCycleResult();
+			}
 
 			// Average
 			// =======
 			
-			System.out.println(">> " + gryphonResult);
-			System.out.println("   >> classA = " + classResultA);
-			System.out.println("   >> evalA = " + evalResultA);
-			System.out.println("   >> classB = " + classResultB);
-			System.out.println("   >> evalB = " + evalResultB);
-			System.out.println("   >> average= " + (evalResultA + evalResultB) / 2);
+			char classLetter = 'A';
+			double evalResultSum = 0;
 			
+			System.out.println(">> " + gryphonResult);
+			for (CycleResult cycleResult : cycleResults) {
+				System.out.printf("   >> class%c = %s\n", classLetter, cycleResult.getClassId());
+				System.out.printf("   >> evalResult%c = %s\n", classLetter, cycleResult.getEvalResult());
+				classLetter++;
+				evalResultSum += cycleResult.getEvalResult();
+			}
+			System.out.println("   >> average= " + evalResultSum / cycleResults.length);
+		}
+	}
+
+	public static void main(String[] args) throws ExecutionException, JSONException, IOException, OntologyAccessException {
+		// Q1 classes
+//		IntegrativoCBRApplication.executeCBR(
+//				"http://purl.org/biotop/btl2.owl#MonoMolecularEntity",
+//				"http://purl.org/biotop/btl2.owl#Organism");
+		
+		// Q2 classes
+		IntegrativoCBRApplication.executeCBR(
+				"http://purl.obolibrary.org/obo/GO_0008150",
+				"http://purl.org/biotop/btl2.owl#Organism");
+		
+		// Q3 classes
+//		IntegrativoCBRApplication.executeCBR(
+//				"http://purl.obolibrary.org/obo/GO_0008150",
+//				"http://purl.obolibrary.org/obo/GO_0005575");
+		
+		// Q4 classes
+//		IntegrativoCBRApplication.executeCBR(
+//				"http://purl.obolibrary.org/obo/GO_0008150",
+//				"http://purl.obolibrary.org/obo/PR_000000001");
+
+		// Q5 classes
+//		IntegrativoCBRApplication.executeCBR(
+//				"http://purl.obolibrary.org/obo/GO_0008150",
+//				"http://purl.obolibrary.org/obo/PR_000000001");
+	}
+	
+	private void setCurrentConnector(GryphonConnector connector) {
+		this.currentConnector = connector;
+	}
+	
+	private class CycleResult {
+		private double evalResult;
+		private String classId;
+
+		public CycleResult(double evalResult, String classId) {
+			this.evalResult = evalResult;
+			this.classId = classId;
 		}
 		
+		public double getEvalResult() {
+			return evalResult;
+		}
+		public String getClassId() {
+			return classId;
+		}
+	}
+	
+	public CycleResult getCycleResult() {
+		return cycleResult;
 	}
 }
