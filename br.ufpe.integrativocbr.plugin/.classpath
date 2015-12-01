@@ -1,6 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
+<<<<<<< HEAD
 	<classpathentry exported="true" kind="lib" path="libs/maven/xml-apis-1.4.01.jar"/>
+=======
+>>>>>>> 15bf0103fd91a50688b83e01394188c951d16ff5
 	<classpathentry exported="true" kind="lib" path="libs/maven/commons-codec-1.6.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/maven/commons-csv-1.0.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/maven/commons-lang3-3.3.2.jar"/>
@@ -18,14 +21,22 @@
 	<classpathentry exported="true" kind="lib" path="libs/maven/jsonld-java-0.5.1.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/maven/libthrift-0.9.2.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/maven/log4j-1.2.17.jar"/>
+<<<<<<< HEAD
 	<classpathentry exported="true" kind="lib" path="libs/maven/owl2sparql-core-0.1-SNAPSHOT.jar"/>
+=======
+	<classpathentry exported="true" kind="lib" path="libs/maven/owl2sparql-core-0.1-SNAPSHOT.jar" sourcepath="/home/tisocic/.m2/repository/org/aksw/owl2sparql/owl2sparql-core/0.1-SNAPSHOT/owl2sparql-core-0.1-SNAPSHOT-sources.jar"/>
+>>>>>>> 15bf0103fd91a50688b83e01394188c951d16ff5
 	<classpathentry exported="true" kind="lib" path="libs/maven/owlapi-distribution-3.5.3.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/maven/slf4j-api-1.7.6.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/maven/slf4j-log4j12-1.7.6.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/maven/trove4j-3.0.3.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/maven/xercesImpl-2.11.0.jar"/>
+<<<<<<< HEAD
 	<classpathentry exported="true" kind="lib" path="libs/jcolibri2.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/ontobridge.jar"/>
+=======
+	<classpathentry exported="true" kind="lib" path="libs/maven/xml-apis-1.4.01.jar"/>
+>>>>>>> 15bf0103fd91a50688b83e01394188c951d16ff5
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.6"/>
 	<classpathentry kind="con" path="org.eclipse.pde.core.requiredPlugins"/>
 	<classpathentry kind="src" path="src/main/java"/>

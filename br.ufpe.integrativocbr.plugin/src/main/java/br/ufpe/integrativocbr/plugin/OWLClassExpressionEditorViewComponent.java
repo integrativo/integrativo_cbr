@@ -27,6 +27,7 @@ import org.semanticweb.owlapi.model.OWLOntology;
 import br.ufpe.cin.aac3.gryphon.Gryphon;
 import br.ufpe.cin.aac3.gryphon.Gryphon.ResultFormat;
 import br.ufpe.cin.aac3.gryphon.GryphonConfig;
+import br.ufpe.cin.aac3.gryphon.model.Database;
 import br.ufpe.cin.aac3.gryphon.model.Ontology;
 
 public class OWLClassExpressionEditorViewComponent extends AbstractOWLViewComponent {
@@ -106,15 +107,13 @@ public class OWLClassExpressionEditorViewComponent extends AbstractOWLViewCompon
 	}
 
 	private void testSparqlConversionButtonAction() {
-		OWLClassExpressionToSPARQLConverter converter = new OWLClassExpressionToSPARQLConverter();
-		String text;
 		try {
-			text = converter.asQuery(expressionEditor.createObject(), "?x").toString();
-			// text = converter.convert(expressionEditor.createObject(), "?x", false);
-			// text = converter.asQueryText("?x", expressionEditor.createObject(), Collections.<OWLEntity>emptySet(), false);
-			JOptionPane.showMessageDialog(this, "SPARQL conversion:\n" + text);
-		} catch (OWLException e) {
+			String sparqlQuery = convertToSparqlQuery();
+			System.out.println(sparqlQuery);
+			JOptionPane.showMessageDialog(this, sparqlQuery);
+		} catch (Exception e) {
 			e.printStackTrace();
+			JOptionPane.showMessageDialog(this, "Erro na conversão: " + e.getMessage());
 		}
 	}
 	
@@ -134,14 +133,18 @@ public class OWLClassExpressionEditorViewComponent extends AbstractOWLViewCompon
 				onto.getOWLOntologyManager().getOntologyDocumentIRI(onto).toURI());
 	}
 	
-	private String sparqlQuery() throws OWLException {
+	private String convertToSparqlQuery() throws OWLException {
 		OWLClassExpressionToSPARQLConverter converter = new OWLClassExpressionToSPARQLConverter();
-		//return converter.asQueryText("?x", expressionEditor.createObject(), Collections.<OWLEntity>emptySet(), false);
+		
+		// to fill internal variables in converter
+		converter.asGroupGraphPattern(expressionEditor.createObject(), "?x");
+		
+		// real conversion
 		return converter.convert(expressionEditor.createObject(), "?x", false);
 	}
 	
 	private void testGryphonQueryButtonAction() {
-		GryphonConfig.setWorkingDirectory(new File("integrationExample"));
+		GryphonConfig.setWorkingDirectory(new File(System.getProperty("user.home"), "/git/GryphonFramework/integrationSWAT4LSPaper"));
 		GryphonConfig.setLogEnabled(true);
 		GryphonConfig.setShowLogo(true);
 		Gryphon.init();
@@ -149,13 +152,12 @@ public class OWLClassExpressionEditorViewComponent extends AbstractOWLViewCompon
 		OWLOntology globalOnto = getOWLModelManager().getActiveOntology();
 		Gryphon.setGlobalOntology(createGryphonOntology(globalOnto));
 		
-		for (OWLOntology importOnto : globalOnto.getDirectImports()) {
-			Gryphon.addLocalOntology(createGryphonOntology(importOnto));
-		}
+		Database localDB = new Database("localhost", 3306, "root", "", "uniprot", Gryphon.DBMS.MySQL);
+		Gryphon.addLocalDatabase(localDB);
 		
 		String sparqlQuery = null;
 		try {
-			sparqlQuery = sparqlQuery();
+			sparqlQuery = convertToSparqlQuery();
 		} catch (OWLException e) {
 			e.printStackTrace();
 			JOptionPane.showMessageDialog(this, 
@@ -167,6 +169,7 @@ public class OWLClassExpressionEditorViewComponent extends AbstractOWLViewCompon
 			
 			File resultFolder = Gryphon.getResultFolder();
 			for (File file : resultFolder.listFiles()) {
+				System.out.println(file.getAbsolutePath());
 				JOptionPane.showMessageDialog(this, file.getAbsolutePath());
 			}
 		}
