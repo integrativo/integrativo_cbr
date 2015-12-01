@@ -136,7 +136,7 @@ public class IntegrativoCBRApplication implements StandardCBRApplication {
 				classLetter++;
 				evalResultSum += cycleResult.getEvalResult();
 			}
-			System.out.println("   >> average= " + evalResultSum / cycleResults.length);
+			System.out.println("   >> average = " + evalResultSum / cycleResults.length);
 		}
 	}
 
