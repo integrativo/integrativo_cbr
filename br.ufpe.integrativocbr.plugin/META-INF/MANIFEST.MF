@@ -11,11 +11,8 @@ Require-Bundle: org.protege.editor.owl;bundle-version="4.3.0",
  org.semanticweb.owl.owlapi,
  gryphon-framework;bundle-version="0.0.1"
 Bundle-ClassPath: src/main/java/,
-<<<<<<< HEAD
  libs/jcolibri2.jar,
  libs/ontobridge.jar,
-=======
->>>>>>> 15bf0103fd91a50688b83e01394188c951d16ff5
  libs/maven/commons-codec-1.6.jar,
  libs/maven/commons-csv-1.0.jar,
  libs/maven/commons-lang3-3.3.2.jar,
