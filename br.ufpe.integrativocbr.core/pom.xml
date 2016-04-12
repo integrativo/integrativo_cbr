@@ -9,7 +9,7 @@
 		<maven.compiler.source>1.6</maven.compiler.source>
 		<maven.compiler.target>1.6</maven.compiler.target>
 	</properties>
-	
+
 	<build>
 		<plugins>
 			<plugin>
@@ -41,14 +41,14 @@
 			<version>2.11.0</version>
 		</dependency>
 		<dependency>
-			<groupId>jcolibri</groupId>
-			<artifactId>jcolibri</artifactId>
-			<version>2</version>
-		</dependency>
-		<dependency>
 			<groupId>ontobridge</groupId>
 			<artifactId>ontobridge</artifactId>
 			<version>latest</version>
+		</dependency>
+		<dependency>
+			<groupId>jcolibri</groupId>
+			<artifactId>jcolibri</artifactId>
+			<version>2</version>
 		</dependency>
 	</dependencies>
 </project>

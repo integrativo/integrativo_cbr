@@ -1,39 +1,40 @@
 package br.ufpe.cin.integrativocbr;
 
 import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.HashSet;
 import java.util.Set;
 
-import jcolibri.exception.OntologyAccessException;
-
 import org.json.JSONArray;
-import org.json.JSONException;
 import org.json.JSONObject;
 
 public class GryphonResultUtil {
 	
-	private static final File defaultJsonFile; 
+	private static final String defaultJsonFile; 
 	
 	static {
-		defaultJsonFile = new File(GryphonResultUtil.class.getResource("/results").getFile(), 
-				"db_localhost_3306_uniprot.json");
+		defaultJsonFile = "/results/db_localhost_3306_uniprot.json";
 	}
 	
-	public static String readFile(File resultFile) throws IOException {
+	public static String readFile(String resultFile) throws IOException {
 		StringBuilder result = new StringBuilder();
-		BufferedReader reader = new BufferedReader(new FileReader(resultFile));
+		InputStream fileIn = GryphonResultUtil.class.getResource(resultFile).openStream();
 		try {
-			String line;
-			while ((line = reader.readLine()) != null) {
-				result.append(line);
-				result.append("\n");
+			BufferedReader reader = new BufferedReader(new InputStreamReader(fileIn));
+			try {
+				String line;
+				while ((line = reader.readLine()) != null) {
+					result.append(line);
+					result.append("\n");
+				}
+				return result.toString();
+			} finally {
+				reader.close();
 			}
-			return result.toString();
 		} finally {
-			reader.close();
+			fileIn.close();
 		}
 	}
 	
@@ -44,7 +45,7 @@ public class GryphonResultUtil {
 				.replaceFirst("cellular_component #", "");
 	}
 	
-	public static Set<GryphonResult> readResults(File resultFile) throws JSONException, IOException, OntologyAccessException {
+	public static Set<GryphonResult> readResults(String resultFile) throws Exception {
 		JSONObject jsonObj = new JSONObject(readFile(resultFile));
 		JSONObject results = jsonObj.getJSONObject("results");
 		JSONArray bindings = results.getJSONArray("bindings");
@@ -71,7 +72,7 @@ public class GryphonResultUtil {
 		return resultList;
 	}
 	
-	public static Set<GryphonResult> readResults() throws JSONException, IOException, OntologyAccessException {
+	public static Set<GryphonResult> readResults() throws Exception {
 		return readResults(defaultJsonFile);
 	}
 

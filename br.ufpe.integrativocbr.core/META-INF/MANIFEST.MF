@@ -6,11 +6,12 @@ Bundle-Version: 1.0.0.qualifier
 Require-Bundle: org.eclipse.ui
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Bundle-ClassPath: .,
+ libs/jcolibri2.jar,
+ libs/ontobridge.jar,
  libs/maven/commons-codec-1.6.jar,
  libs/maven/httpclient-4.2.3.jar,
  libs/maven/httpcore-4.2.2.jar,
  libs/maven/jcl-over-slf4j-1.6.4.jar,
- libs/maven/jcolibri-2.jar,
  libs/maven/jena-arq-2.11.0.jar,
  libs/maven/jena-core-2.11.0.jar,
  libs/maven/jena-iri-1.0.0.jar,
@@ -20,6 +21,4 @@ Bundle-ClassPath: .,
  libs/maven/slf4j-api-1.6.4.jar,
  libs/maven/slf4j-log4j12-1.6.4.jar,
  libs/maven/xercesImpl-2.11.0.jar,
- libs/maven/xml-apis-1.4.01.jar,
- libs/jcolibri2.jar,
- libs/ontobridge.jar
+ libs/maven/xml-apis-1.4.01.jar

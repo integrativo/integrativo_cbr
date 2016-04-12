@@ -6,7 +6,6 @@
 	<classpathentry exported="true" kind="lib" path="libs/maven/httpclient-4.2.3.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/maven/httpcore-4.2.2.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/maven/jcl-over-slf4j-1.6.4.jar"/>
-	<classpathentry exported="true" kind="lib" path="libs/maven/jcolibri-2.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/maven/jena-arq-2.11.0.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/maven/jena-core-2.11.0.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/maven/jena-iri-1.0.0.jar"/>

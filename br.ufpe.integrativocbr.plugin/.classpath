@@ -1,29 +1,24 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
-	<classpathentry exported="true" kind="lib" path="libs/maven/xml-apis-1.4.01.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/xml-apis-1.4.01-modified.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/maven/xercesImpl-2.11.0.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/maven/commons-codec-1.6.jar"/>
-	<classpathentry exported="true" kind="lib" path="libs/maven/commons-csv-1.0.jar"/>
-	<classpathentry exported="true" kind="lib" path="libs/maven/commons-lang3-3.3.2.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/maven/guava-18.0.jar"/>
-	<classpathentry exported="true" kind="lib" path="libs/maven/httpclient-4.2.6.jar"/>
-	<classpathentry exported="true" kind="lib" path="libs/maven/httpclient-cache-4.2.6.jar"/>
-	<classpathentry exported="true" kind="lib" path="libs/maven/httpcore-4.2.5.jar"/>
-	<classpathentry exported="true" kind="lib" path="libs/maven/jackson-annotations-2.3.0.jar"/>
-	<classpathentry exported="true" kind="lib" path="libs/maven/jackson-core-2.3.3.jar"/>
-	<classpathentry exported="true" kind="lib" path="libs/maven/jackson-databind-2.3.3.jar"/>
-	<classpathentry exported="true" kind="lib" path="libs/maven/jcl-over-slf4j-1.7.6.jar"/>
-	<classpathentry exported="true" kind="lib" path="libs/maven/jena-arq-2.13.0.jar"/>
-	<classpathentry exported="true" kind="lib" path="libs/maven/jena-core-2.13.0.jar"/>
-	<classpathentry exported="true" kind="lib" path="libs/maven/jena-iri-1.1.2.jar"/>
-	<classpathentry exported="true" kind="lib" path="libs/maven/jsonld-java-0.5.1.jar"/>
-	<classpathentry exported="true" kind="lib" path="libs/maven/libthrift-0.9.2.jar"/>
-	<classpathentry exported="true" kind="lib" path="libs/maven/log4j-1.2.17.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/maven/httpclient-4.2.3.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/maven/httpcore-4.2.2.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/maven/integrativocbr-core-0.0.1-SNAPSHOT.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/maven/jcl-over-slf4j-1.6.4.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/maven/jena-arq-2.11.0.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/maven/jena-core-2.11.0.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/maven/jena-iri-1.0.0.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/maven/json-20140107.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/maven/log4j-1.2.16.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/maven/ontobridge-latest.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/maven/owl2sparql-core-0.1-SNAPSHOT.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/maven/owlapi-distribution-3.5.3.jar"/>
-	<classpathentry exported="true" kind="lib" path="libs/maven/slf4j-api-1.7.6.jar"/>
-	<classpathentry exported="true" kind="lib" path="libs/maven/slf4j-log4j12-1.7.6.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/maven/slf4j-api-1.6.4.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/maven/slf4j-log4j12-1.6.4.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/maven/trove4j-3.0.3.jar"/>
-	<classpathentry exported="true" kind="lib" path="libs/maven/xercesImpl-2.11.0.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/jcolibri2.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/ontobridge.jar"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.6"/>

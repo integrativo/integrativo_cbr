@@ -96,7 +96,7 @@ public class IntegrativoCBRApplication implements StandardCBRApplication {
 		return similarityResult;
 	}
 	
-	public static void executeCBR(String... classes) throws ExecutionException, JSONException, IOException, OntologyAccessException {
+	public static void executeCBR(String... classes) throws Exception {
 		IntegrativoCBRApplication app = new IntegrativoCBRApplication();
 		app.configureOntoBridge();
 		app.configure();
@@ -140,7 +140,7 @@ public class IntegrativoCBRApplication implements StandardCBRApplication {
 		}
 	}
 
-	public static void main(String[] args) throws ExecutionException, JSONException, IOException, OntologyAccessException {
+	public static void main(String[] args) throws Exception {
 		// Q1 classes
 //		IntegrativoCBRApplication.executeCBR(
 //				"http://purl.org/biotop/btl2.owl#MonoMolecularEntity",
