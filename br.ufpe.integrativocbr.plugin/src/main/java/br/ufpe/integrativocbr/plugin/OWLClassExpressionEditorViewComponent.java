@@ -6,8 +6,12 @@ import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.IOException;
+import java.util.Iterator;
 import java.util.Set;
 
 import javax.swing.BorderFactory;
@@ -16,15 +20,13 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JSplitPane;
-
-import jcolibri.exception.ExecutionException;
-import jcolibri.exception.OntologyAccessException;
+import javax.swing.SwingWorker;
 
 import org.aksw.owl2sparql.OWLClassExpressionToSPARQLConverter;
-import org.json.JSONException;
 import org.protege.editor.owl.ui.clsdescriptioneditor.ExpressionEditor;
 import org.protege.editor.owl.ui.clsdescriptioneditor.OWLExpressionChecker;
 import org.protege.editor.owl.ui.view.AbstractOWLViewComponent;
+import org.semanticweb.owlapi.model.OWLClass;
 import org.semanticweb.owlapi.model.OWLClassExpression;
 import org.semanticweb.owlapi.model.OWLException;
 import org.semanticweb.owlapi.model.OWLOntology;
@@ -35,6 +37,7 @@ import br.ufpe.cin.aac3.gryphon.GryphonConfig;
 import br.ufpe.cin.aac3.gryphon.model.Database;
 import br.ufpe.cin.aac3.gryphon.model.Ontology;
 import br.ufpe.cin.integrativocbr.IntegrativoCBRApplication;
+import br.ufpe.cin.integrativocbr.event.CBREventListener;
 
 public class OWLClassExpressionEditorViewComponent extends AbstractOWLViewComponent {
 
@@ -58,12 +61,12 @@ public class OWLClassExpressionEditorViewComponent extends AbstractOWLViewCompon
 	}
 	
 	private JPanel createButtonsPanel() {
-		JButton consultaButton = new JButton();
-		consultaButton.setText("Consulta");
-		consultaButton.addActionListener(new ActionListener() {
+		JButton testCBRButton = new JButton();
+		testCBRButton.setText("Teste CBR");
+		testCBRButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
-				consultaButtonAction();
+				testCBRButtonAction();
 			}
 		});
 		
@@ -105,7 +108,7 @@ public class OWLClassExpressionEditorViewComponent extends AbstractOWLViewCompon
 		
 		JPanel buttonsPanel = new JPanel();
 		buttonsPanel.setLayout(new FlowLayout());
-		buttonsPanel.add(consultaButton);
+		buttonsPanel.add(testCBRButton);
 		buttonsPanel.add(testGryphonButton);
 		buttonsPanel.add(testSparqlConversionButton);
 		buttonsPanel.add(testOntologiesButton);
@@ -113,11 +116,59 @@ public class OWLClassExpressionEditorViewComponent extends AbstractOWLViewCompon
 		return buttonsPanel;
 	}
 	
-	private void consultaButtonAction() {
+	private void testCBRButtonAction() {
 		try {
-			IntegrativoCBRApplication.executeCBR(
-					"http://purl.obolibrary.org/obo/GO_0008150",
-					"http://purl.org/biotop/btl2.owl#Organism");
+			OWLClassExpression classExpression = expressionEditor.createObject();
+			Set<OWLClass> classes = classExpression.getClassesInSignature();
+			final String[] classesIRI = new String[classes.size()];
+			int index = 0;
+			Iterator<OWLClass> iterator = classes.iterator();
+			
+			while (iterator.hasNext()) {
+				classesIRI[index] = iterator.next().getIRI().toString();
+				index++;
+			}
+			final ProgressDialog progressDialog = new ProgressDialog(null);
+			progressDialog.setVisible(true);
+			
+			new SwingWorker<Object, String>() {
+
+				@Override
+				protected Object doInBackground() throws Exception {
+					IntegrativoCBRApplication.executeCBR(new CBREventListener() {
+
+						@Override
+						public void beforeCreateGryphonConnector(String classIRI) {
+							publish("Creating connector: " + classIRI);
+							
+						}
+
+						@Override
+						public void beforeCycle(String classIRI) {
+							publish("Cycle: " + classIRI);
+						}
+
+						@Override
+						public void beforeResultCycle(String classIRI) {
+							publish("Result: " + classIRI);
+						}
+						
+					}, classesIRI);
+					return null;
+				}
+				
+				protected void process(java.util.List<String> chunks) {
+					for (String chunk : chunks) {
+						progressDialog.setVisible(true);
+						progressDialog.appendText(chunk);
+					}
+				}
+				
+				@Override
+				protected void done() {
+					progressDialog.dispose();
+				}
+			}.execute();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -148,10 +199,12 @@ public class OWLClassExpressionEditorViewComponent extends AbstractOWLViewCompon
 		JOptionPane.showMessageDialog(this, onto.getOWLOntologyManager().getOntologyDocumentIRI(onto));
 
 		Set<OWLOntology> ontoImports = onto.getDirectImports();
+		StringBuilder text = new StringBuilder();
 		for (OWLOntology ontoImport : ontoImports) {
-			JOptionPane.showMessageDialog(this, 
-					ontoImport.getOWLOntologyManager().getOntologyDocumentIRI(ontoImport));
+			text.append(ontoImport.getOWLOntologyManager().getOntologyDocumentIRI(ontoImport));
+			text.append("\n");
 		}
+		JOptionPane.showMessageDialog(this, text.toString());
 	}
 	
 	private Ontology createGryphonOntology(OWLOntology onto) {
@@ -163,7 +216,7 @@ public class OWLClassExpressionEditorViewComponent extends AbstractOWLViewCompon
 		OWLClassExpressionToSPARQLConverter converter = new OWLClassExpressionToSPARQLConverter();
 		
 		// to fill internal variables in converter
-		// converter.asGroupGraphPattern(expressionEditor.createObject(), "?x");
+		converter.asGroupGraphPattern(expressionEditor.createObject(), "?x");
 		
 		// real conversion
 		return converter.convert(expressionEditor.createObject(), "?x", false);
@@ -194,9 +247,33 @@ public class OWLClassExpressionEditorViewComponent extends AbstractOWLViewCompon
 			Gryphon.query(sparqlQuery, ResultFormat.JSON);
 			
 			File resultFolder = Gryphon.getResultFolder();
-			for (File file : resultFolder.listFiles()) {
-				System.out.println(file.getAbsolutePath());
-				JOptionPane.showMessageDialog(this, file.getAbsolutePath());
+//			for (File file : resultFolder.listFiles()) {
+//				System.out.println(file.getAbsolutePath());
+//				JOptionPane.showMessageDialog(this, file.getAbsolutePath());
+//			}
+			File resultFile = new File(resultFolder, "db_localhost_3306_uniprot.json");
+			BufferedReader reader;
+			try {
+				reader = new BufferedReader(new FileReader(resultFile));
+				try {
+					String line;
+					StringBuilder text = new StringBuilder();
+					while ((line = reader.readLine()) != null) {
+						text.append(line);
+						text.append("\n");
+					}
+					JOptionPane.showMessageDialog(this, text.toString());
+				} catch (IOException e) {
+					e.printStackTrace();
+				} finally {
+					try {
+						reader.close();
+					} catch (IOException e) {
+						e.printStackTrace();
+					}
+				}
+			} catch (FileNotFoundException e1) {
+				e1.printStackTrace();
 			}
 		}
 	}

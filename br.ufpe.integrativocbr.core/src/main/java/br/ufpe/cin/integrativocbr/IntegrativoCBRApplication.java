@@ -1,8 +1,8 @@
 package br.ufpe.cin.integrativocbr;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
@@ -14,7 +14,6 @@ import jcolibri.cbrcore.Attribute;
 import jcolibri.cbrcore.CBRCaseBase;
 import jcolibri.cbrcore.CBRQuery;
 import jcolibri.exception.ExecutionException;
-import jcolibri.exception.OntologyAccessException;
 import jcolibri.method.retrieve.RetrievalResult;
 import jcolibri.method.retrieve.NNretrieval.NNConfig;
 import jcolibri.method.retrieve.NNretrieval.NNScoringMethod;
@@ -22,9 +21,8 @@ import jcolibri.method.retrieve.NNretrieval.similarity.global.Average;
 import jcolibri.method.retrieve.NNretrieval.similarity.local.MaxString;
 import jcolibri.method.retrieve.selection.SelectCases;
 import jcolibri.util.OntoBridgeSingleton;
-
-import org.json.JSONException;
-
+import br.ufpe.cin.integrativocbr.event.CBREventAdapter;
+import br.ufpe.cin.integrativocbr.event.CBREventListener;
 import es.ucm.fdi.gaia.ontobridge.OntoBridge;
 import es.ucm.fdi.gaia.ontobridge.OntologyDocument;
 
@@ -96,7 +94,7 @@ public class IntegrativoCBRApplication implements StandardCBRApplication {
 		return similarityResult;
 	}
 	
-	public static void executeCBR(String... classes) throws Exception {
+	public static void executeCBR(CBREventListener cbrEventListener, String... classes) throws Exception {
 		IntegrativoCBRApplication app = new IntegrativoCBRApplication();
 		app.configureOntoBridge();
 		app.configure();
@@ -104,12 +102,15 @@ public class IntegrativoCBRApplication implements StandardCBRApplication {
 		GryphonConnector[] connectors = new GryphonConnector[classes.length];
 		for (int i = 0; i < classes.length; i++) {
 			System.out.println(">>>> Initializing connector for class: " + classes[i]);
+			cbrEventListener.beforeCreateGryphonConnector(classes[i]);
 			connectors[i] = new GryphonConnector(classes[i]);
 		}
 		
 		CBRQuery query;
 		for (GryphonResult gryphonResult : GryphonResultUtil.readResults()) {
 
+			cbrEventListener.beforeCycle(Arrays.asList(gryphonResult.getTuples()).toString());
+			
 			CycleResult[] cycleResults = new CycleResult[connectors.length];
 			for (int i = 0; i < connectors.length; i++) {
 				query = new CBRQuery();
@@ -147,7 +148,7 @@ public class IntegrativoCBRApplication implements StandardCBRApplication {
 //				"http://purl.org/biotop/btl2.owl#Organism");
 		
 		// Q2 classes
-		IntegrativoCBRApplication.executeCBR(
+		IntegrativoCBRApplication.executeCBR(new CBREventAdapter(),
 				"http://purl.obolibrary.org/obo/GO_0008150",
 				"http://purl.org/biotop/btl2.owl#Organism");
 		

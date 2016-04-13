@@ -21,9 +21,11 @@ public class GryphonConnector implements Connector {
 	private Set<CBRCase> cbrCaseList = new HashSet<CBRCase>();
 	private Set<String> subClassesSet = new HashSet<String>();
 	private StringBuilder indentation = new StringBuilder();
+	private String classIRI;
 	
-	public GryphonConnector(String klass) {
-		readSubClasses(klass);
+	public GryphonConnector(String classIRI) {
+		this.classIRI = classIRI;
+		readSubClasses(classIRI);
 	}
 	
 	private void readSubClasses(String klass) {
@@ -52,7 +54,6 @@ public class GryphonConnector implements Connector {
 			subClassesSet.add(subClass);
 		}
 	}
-
 
 	@Override
 	public void close() {
@@ -83,4 +84,7 @@ public class GryphonConnector implements Connector {
 	public void storeCases(Collection<CBRCase> arg0) {
 	}
 
+	public String getClassIRI() {
+		return classIRI;
+	}
 }
