@@ -11,8 +11,12 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
@@ -23,13 +27,36 @@ import javax.swing.JSplitPane;
 import javax.swing.SwingWorker;
 
 import org.aksw.owl2sparql.OWLClassExpressionToSPARQLConverter;
+import org.protege.editor.owl.model.OWLModelManager;
+import org.protege.editor.owl.model.namespace.NamespaceManager;
 import org.protege.editor.owl.ui.clsdescriptioneditor.ExpressionEditor;
 import org.protege.editor.owl.ui.clsdescriptioneditor.OWLExpressionChecker;
 import org.protege.editor.owl.ui.view.AbstractOWLViewComponent;
 import org.semanticweb.owlapi.model.OWLClass;
 import org.semanticweb.owlapi.model.OWLClassExpression;
+import org.semanticweb.owlapi.model.OWLClassExpressionVisitor;
+import org.semanticweb.owlapi.model.OWLDataAllValuesFrom;
+import org.semanticweb.owlapi.model.OWLDataExactCardinality;
+import org.semanticweb.owlapi.model.OWLDataHasValue;
+import org.semanticweb.owlapi.model.OWLDataMaxCardinality;
+import org.semanticweb.owlapi.model.OWLDataMinCardinality;
+import org.semanticweb.owlapi.model.OWLDataSomeValuesFrom;
 import org.semanticweb.owlapi.model.OWLException;
+import org.semanticweb.owlapi.model.OWLObjectAllValuesFrom;
+import org.semanticweb.owlapi.model.OWLObjectComplementOf;
+import org.semanticweb.owlapi.model.OWLObjectExactCardinality;
+import org.semanticweb.owlapi.model.OWLObjectHasSelf;
+import org.semanticweb.owlapi.model.OWLObjectHasValue;
+import org.semanticweb.owlapi.model.OWLObjectIntersectionOf;
+import org.semanticweb.owlapi.model.OWLObjectMaxCardinality;
+import org.semanticweb.owlapi.model.OWLObjectMinCardinality;
+import org.semanticweb.owlapi.model.OWLObjectOneOf;
+import org.semanticweb.owlapi.model.OWLObjectProperty;
+import org.semanticweb.owlapi.model.OWLObjectSomeValuesFrom;
+import org.semanticweb.owlapi.model.OWLObjectUnionOf;
 import org.semanticweb.owlapi.model.OWLOntology;
+import org.semanticweb.owlapi.util.OWLClassExpressionVisitorAdapter;
+import org.semanticweb.owlapi.util.OWLObjectVisitorAdapter;
 
 import br.ufpe.cin.aac3.gryphon.Gryphon;
 import br.ufpe.cin.aac3.gryphon.Gryphon.ResultFormat;
@@ -106,14 +133,63 @@ public class OWLClassExpressionEditorViewComponent extends AbstractOWLViewCompon
 			}
 		});
 		
+		JButton testAxiomsButton = new JButton();
+		testAxiomsButton.setText("Teste Axiomas");
+		testAxiomsButton.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				testAxiomsButtonAction();			
+			}
+		});
+		
 		JPanel buttonsPanel = new JPanel();
 		buttonsPanel.setLayout(new FlowLayout());
+		buttonsPanel.add(testAxiomsButton);
 		buttonsPanel.add(testCBRButton);
 		buttonsPanel.add(testGryphonButton);
 		buttonsPanel.add(testSparqlConversionButton);
 		buttonsPanel.add(testOntologiesButton);
 		buttonsPanel.add(testGryphonQueryButton);
 		return buttonsPanel;
+	}
+	
+	private void testAxiomsButtonAction() {
+		try {
+			OWLClassExpression classExpression = expressionEditor.createObject();
+			final List<OWLClass> owlClasses = new ArrayList<OWLClass>();
+			final List<NewAxiom> newAxioms = new ArrayList<NewAxiom>();
+			
+			classExpression.getNNF().accept(new OWLClassExpressionVisitorAdapter() {
+				@Override
+				public void visit(OWLObjectIntersectionOf intersection) {
+					for (OWLClassExpression expr : intersection.getOperands()) {
+						if (expr instanceof OWLClass) {
+							owlClasses.add((OWLClass) expr);
+						}
+					}
+					for (OWLClassExpression expr : intersection.getOperands()) {
+						if (expr instanceof OWLObjectSomeValuesFrom) {
+							OWLObjectSomeValuesFrom some = (OWLObjectSomeValuesFrom) expr;
+							for (OWLObjectProperty objectProperty : some.getObjectPropertiesInSignature()) {
+								for (OWLClass owlClass2 : some.getClassesInSignature()) {
+									for (OWLClass owlClass1 : owlClasses) {
+										newAxioms.add(new NewAxiom(owlClass1, objectProperty, owlClass2, getOWLModelManager().getActiveOntology()));
+									}
+								}
+							}
+						}
+					}
+				}
+			});
+			
+			System.out.println("-----------");
+			for (NewAxiom newAxiom : newAxioms) {
+				System.out.println(newAxiom);
+			}
+		} catch (OWLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 	
 	private void testCBRButtonAction() {
@@ -207,8 +283,21 @@ public class OWLClassExpressionEditorViewComponent extends AbstractOWLViewCompon
 		JOptionPane.showMessageDialog(this, text.toString());
 	}
 	
+	private String getOntologyNameFromIRI(String iri) {
+		String[] patterns = new String[] { "~(.+)?#", "/(\\w+)$", "/(\\w+)\\.owl$" };
+		
+		for (String patternString : patterns) {
+			Pattern pattern = Pattern.compile(patternString);
+			Matcher matcher = pattern.matcher(iri);
+			if (matcher.find()) {
+				return matcher.group(1);
+			}
+		}
+		return null;
+	}
+	
 	private Ontology createGryphonOntology(OWLOntology onto) {
-		return new Ontology(onto.getOntologyID().getOntologyIRI().toString(),
+		return new Ontology(getOntologyNameFromIRI(onto.getOntologyID().getOntologyIRI().toString()),
 				onto.getOWLOntologyManager().getOntologyDocumentIRI(onto).toURI());
 	}
 	
@@ -223,7 +312,7 @@ public class OWLClassExpressionEditorViewComponent extends AbstractOWLViewCompon
 	}
 	
 	private void testGryphonQueryButtonAction() {
-		GryphonConfig.setWorkingDirectory(new File(System.getProperty("user.home"), "/mst/GryphonFramework/integrationSWAT4LSPaper"));
+		GryphonConfig.setWorkingDirectory(new File(System.getProperty("user.home"), "/mst/GryphonFramework/integrationExample"));
 		GryphonConfig.setLogEnabled(true);
 		GryphonConfig.setShowLogo(true);
 		Gryphon.init();
@@ -231,8 +320,16 @@ public class OWLClassExpressionEditorViewComponent extends AbstractOWLViewCompon
 		OWLOntology globalOnto = getOWLModelManager().getActiveOntology();
 		Gryphon.setGlobalOntology(createGryphonOntology(globalOnto));
 		
+		Set<OWLOntology> ontoImports = globalOnto.getDirectImports();
+		for (OWLOntology ontoImport : ontoImports) {
+			Gryphon.addLocalOntology(createGryphonOntology(ontoImport));
+		}
+		
+		
 		Database localDB = new Database("localhost", 3306, "root", "admin123", "uniprot", Gryphon.DBMS.MySQL);
 		Gryphon.addLocalDatabase(localDB);
+		
+		// Gryphon.alignAndMap();
 		
 		String sparqlQuery = null;
 		try {
@@ -261,6 +358,10 @@ public class OWLClassExpressionEditorViewComponent extends AbstractOWLViewCompon
 					while ((line = reader.readLine()) != null) {
 						text.append(line);
 						text.append("\n");
+						if (text.length() > 400) {
+							text.append("\n(...)");
+							break;
+						}
 					}
 					JOptionPane.showMessageDialog(this, text.toString());
 				} catch (IOException e) {
