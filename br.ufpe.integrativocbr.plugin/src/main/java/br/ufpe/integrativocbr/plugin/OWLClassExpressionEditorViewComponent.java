@@ -7,9 +7,12 @@ import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.FilenameFilter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -27,36 +30,17 @@ import javax.swing.JSplitPane;
 import javax.swing.SwingWorker;
 
 import org.aksw.owl2sparql.OWLClassExpressionToSPARQLConverter;
-import org.protege.editor.owl.model.OWLModelManager;
-import org.protege.editor.owl.model.namespace.NamespaceManager;
 import org.protege.editor.owl.ui.clsdescriptioneditor.ExpressionEditor;
 import org.protege.editor.owl.ui.clsdescriptioneditor.OWLExpressionChecker;
 import org.protege.editor.owl.ui.view.AbstractOWLViewComponent;
 import org.semanticweb.owlapi.model.OWLClass;
 import org.semanticweb.owlapi.model.OWLClassExpression;
-import org.semanticweb.owlapi.model.OWLClassExpressionVisitor;
-import org.semanticweb.owlapi.model.OWLDataAllValuesFrom;
-import org.semanticweb.owlapi.model.OWLDataExactCardinality;
-import org.semanticweb.owlapi.model.OWLDataHasValue;
-import org.semanticweb.owlapi.model.OWLDataMaxCardinality;
-import org.semanticweb.owlapi.model.OWLDataMinCardinality;
-import org.semanticweb.owlapi.model.OWLDataSomeValuesFrom;
 import org.semanticweb.owlapi.model.OWLException;
-import org.semanticweb.owlapi.model.OWLObjectAllValuesFrom;
-import org.semanticweb.owlapi.model.OWLObjectComplementOf;
-import org.semanticweb.owlapi.model.OWLObjectExactCardinality;
-import org.semanticweb.owlapi.model.OWLObjectHasSelf;
-import org.semanticweb.owlapi.model.OWLObjectHasValue;
 import org.semanticweb.owlapi.model.OWLObjectIntersectionOf;
-import org.semanticweb.owlapi.model.OWLObjectMaxCardinality;
-import org.semanticweb.owlapi.model.OWLObjectMinCardinality;
-import org.semanticweb.owlapi.model.OWLObjectOneOf;
 import org.semanticweb.owlapi.model.OWLObjectProperty;
 import org.semanticweb.owlapi.model.OWLObjectSomeValuesFrom;
-import org.semanticweb.owlapi.model.OWLObjectUnionOf;
 import org.semanticweb.owlapi.model.OWLOntology;
 import org.semanticweb.owlapi.util.OWLClassExpressionVisitorAdapter;
-import org.semanticweb.owlapi.util.OWLObjectVisitorAdapter;
 
 import br.ufpe.cin.aac3.gryphon.Gryphon;
 import br.ufpe.cin.aac3.gryphon.Gryphon.ResultFormat;
@@ -134,11 +118,11 @@ public class OWLClassExpressionEditorViewComponent extends AbstractOWLViewCompon
 		});
 		
 		JButton testAxiomsButton = new JButton();
-		testAxiomsButton.setText("Teste Axiomas");
+		testAxiomsButton.setText("Gera Mapeamentos");
 		testAxiomsButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				testAxiomsButtonAction();			
+				generateMappings();			
 			}
 		});
 		
@@ -153,7 +137,7 @@ public class OWLClassExpressionEditorViewComponent extends AbstractOWLViewCompon
 		return buttonsPanel;
 	}
 	
-	private void testAxiomsButtonAction() {
+	private void generateMappings() {
 		try {
 			OWLClassExpression classExpression = expressionEditor.createObject();
 			final List<OWLClass> owlClasses = new ArrayList<OWLClass>();
@@ -182,16 +166,64 @@ public class OWLClassExpressionEditorViewComponent extends AbstractOWLViewCompon
 				}
 			});
 			
-			System.out.println("-----------");
-			for (NewAxiom newAxiom : newAxioms) {
-				System.out.println(newAxiom);
-			}
+			initGryphon();
+			writeNewAxioms(axiomsMissingInMappingFile(newAxioms));
+			
 		} catch (OWLException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
 	
+	private void writeNewAxioms(List<NewAxiom> axioms) {
+		if (axioms == null || axioms.isEmpty()) {
+			return;
+		}
+		try {
+			BufferedWriter writer = new BufferedWriter(new FileWriter(getMappingFile(), true));
+			writer.append('\n');
+			for (NewAxiom newAxiom : axioms) {
+				writer.append(newAxiom.toString());
+			}
+			writer.close();
+		} catch (IOException ex) {
+			ex.printStackTrace();
+		}
+	}
+
+	private List<NewAxiom> axiomsMissingInMappingFile(List<NewAxiom> newAxioms) {
+		try {
+			String line;
+			BufferedReader reader = new BufferedReader(new FileReader(getMappingFile()));
+			List<NewAxiom> result = new ArrayList<NewAxiom>(newAxioms);
+			while ((line = reader.readLine()) != null && result.size() > 0) {
+				Iterator<NewAxiom> iterator = result.iterator();
+				while (iterator.hasNext()) {
+					NewAxiom newAxiom = (NewAxiom) iterator.next();
+					if (line.contains(newAxiom.getMappingName())) {
+						iterator.remove();
+					}
+				}
+			}
+			return result;
+		} catch (IOException ex) {
+			ex.printStackTrace();
+			return null;
+		}
+	}
+	
+	private File getMappingFile() throws FileNotFoundException {
+		String[] list = Gryphon.getMapFolder().list(new FilenameFilter() {
+			@Override
+			public boolean accept(File dir, String name) {
+				return name.endsWith(".ttl");
+			}
+		});
+		if (list.length > 0) {
+			return new File(Gryphon.getMapFolder(), list[0]);
+		}
+		throw new FileNotFoundException("Mapping file not found");
+	}
+
 	private void testCBRButtonAction() {
 		try {
 			OWLClassExpression classExpression = expressionEditor.createObject();
@@ -251,12 +283,7 @@ public class OWLClassExpressionEditorViewComponent extends AbstractOWLViewCompon
 	}
 	
 	private void testGryphonButtonAction() {
-		System.out.println("*** INIT Test Gryphon");
-		GryphonConfig.setWorkingDirectory(new File("integrationExample"));
-		GryphonConfig.setLogEnabled(true);
-		GryphonConfig.setShowLogo(true);
-		Gryphon.init();
-		System.out.println("*** END Test Gryphon");
+		initGryphon();
 	}
 
 	private void testSparqlConversionButtonAction() {
@@ -312,10 +339,7 @@ public class OWLClassExpressionEditorViewComponent extends AbstractOWLViewCompon
 	}
 	
 	private void testGryphonQueryButtonAction() {
-		GryphonConfig.setWorkingDirectory(new File(System.getProperty("user.home"), "/mst/GryphonFramework/integrationExample"));
-		GryphonConfig.setLogEnabled(true);
-		GryphonConfig.setShowLogo(true);
-		Gryphon.init();
+		generateMappings();
 
 		OWLOntology globalOnto = getOWLModelManager().getActiveOntology();
 		Gryphon.setGlobalOntology(createGryphonOntology(globalOnto));
@@ -377,6 +401,13 @@ public class OWLClassExpressionEditorViewComponent extends AbstractOWLViewCompon
 				e1.printStackTrace();
 			}
 		}
+	}
+
+	private void initGryphon() {
+		GryphonConfig.setWorkingDirectory(new File(System.getProperty("user.home"), "/mst/GryphonFramework/integrationExample"));
+		GryphonConfig.setLogEnabled(true);
+		GryphonConfig.setShowLogo(true);
+		Gryphon.init();
 	}
 	
 	private JPanel createQueryPanel() {

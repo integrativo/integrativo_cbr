@@ -2,9 +2,7 @@ package br.ufpe.integrativocbr.plugin;
 
 import java.net.URI;
 
-import org.protege.editor.owl.ProtegeOWL;
 import org.semanticweb.owlapi.apibinding.OWLManager;
-import org.semanticweb.owlapi.model.IRI;
 import org.semanticweb.owlapi.model.OWLAnnotation;
 import org.semanticweb.owlapi.model.OWLClass;
 import org.semanticweb.owlapi.model.OWLEntity;
@@ -36,6 +34,7 @@ public class NewAxiom {
 
 	public void setOwlClass1(OWLClass owlClass1) {
 		this.owlClass1 = owlClass1;
+		
 	}
 
 	public OWLObjectProperty getProperty() {
@@ -65,32 +64,9 @@ public class NewAxiom {
 		return "";
 	}
 
-    private String getShortForm(IRI uri){
-        try {
-            String rendering = uri.getFragment();
-            if (rendering == null) {
-                // Get last bit of path
-                String path = uri.toURI().getPath();
-                if (path == null) {
-                    return uri.toString();
-                }
-                return uri.toURI().getPath().substring(path.lastIndexOf("/") + 1);
-            }
-            return rendering;
-        }
-        catch (Exception e) {
-            return "<Error! " + e.getMessage() + ">";
-        }
-    }
-
-	
 	private String getOWLEntityLabelFormatted(OWLEntity owlEntity) {
 		return getOWLEntityLabel(owlEntity).replace(" ", "_");
 	}
-	
-//	private String getURIPrefix(URI uri) {
-//		ontology.getDirectImports()
-//	}
 	
 	private String getPrefix(URI uri) {
 		if (uri.toString().contains("btl2")) {
@@ -114,6 +90,14 @@ public class NewAxiom {
 		return label;
 	}
 	
+	public String getMappingName(String owlClassTable1, String owlClassTable2) {
+		return "map:" + owlClassTable1 + "_" + owlClassTable2 + "_" + property.getIRI().toURI().getFragment();
+	}
+	
+	public String getMappingName() {
+		return getMappingName(getTableName(owlClass1), getTableName(owlClass2));
+	}
+	
 	@Override
 	public String toString() {
 		String owlClassTable1 = getTableName(owlClass1);
@@ -121,12 +105,7 @@ public class NewAxiom {
 		URI propertyURI = property.getIRI().toURI();
 		
 		StringBuilder out = new StringBuilder();
-		out.append("map:");
-		out.append(owlClassTable1);
-		out.append("_");
-		out.append(owlClassTable2);
-		out.append("_");
-		out.append(propertyURI.getFragment());
+		out.append(getMappingName(owlClassTable1, owlClassTable2));
 		out.append(" a d2rq:PropertyBridge;\n\td2rq:belongsToClassMap map:");
 		out.append(owlClassTable1);
 		out.append(";\n\td2rq:refersToClassMap map:");
@@ -139,7 +118,7 @@ public class NewAxiom {
 		out.append(owlClassTable1);
 		out.append(".id => ");
 		out.append(owlClassTable2);
-		out.append(".id\";\n\t.");
+		out.append(".id\";\n\t.\n");
 		return out.toString();
 	}
 }
