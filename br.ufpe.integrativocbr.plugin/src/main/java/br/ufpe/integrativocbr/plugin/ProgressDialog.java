@@ -3,8 +3,11 @@ package br.ufpe.integrativocbr.plugin;
 import java.awt.BorderLayout;
 import java.awt.Font;
 import java.awt.Frame;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
 import javax.swing.BorderFactory;
+import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -17,16 +20,16 @@ public class ProgressDialog extends JDialog {
 	private static final long serialVersionUID = 1L;
 
 	private JTextArea textArea;
+	private JPanel bottomPanel;
 	
 	public ProgressDialog(Frame owner) {
 		super(owner, false);
-		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+		setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
 		setTitle("Progresso");
-		setSize(400, 200);
+		setSize(700, 400);
 		setLocationRelativeTo(owner);
 		initComponents();
 	}
-
 
 	private void initComponents() {
 		JPanel centerPanel = new JPanel();
@@ -42,8 +45,25 @@ public class ProgressDialog extends JDialog {
 		centerPanel.add(new JScrollPane(textArea), BorderLayout.CENTER);
 		
 		add(centerPanel, BorderLayout.CENTER);
+		
+		bottomPanel = new JPanel(new BorderLayout());
+		JButton closeButton = new JButton("Fechar");
+		bottomPanel.add(closeButton);
+		bottomPanel.setVisible(false);
+		closeButton.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				ProgressDialog.this.dispose();
+			}
+		});
+		add(bottomPanel, BorderLayout.SOUTH);
 	}
 
+	public void showCloseButton() {
+		bottomPanel.setVisible(true);
+		setDefaultCloseOperation(DISPOSE_ON_CLOSE);
+	}
+	
 	public void appendText(String text) {
 		textArea.append(text);
 		textArea.append("\n");

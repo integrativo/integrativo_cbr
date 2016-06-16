@@ -12,6 +12,7 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
@@ -27,50 +28,34 @@ import javax.swing.JSplitPane;
 import javax.swing.SwingWorker;
 
 import org.aksw.owl2sparql.OWLClassExpressionToSPARQLConverter;
-import org.protege.editor.owl.model.OWLModelManager;
-import org.protege.editor.owl.model.namespace.NamespaceManager;
 import org.protege.editor.owl.ui.clsdescriptioneditor.ExpressionEditor;
 import org.protege.editor.owl.ui.clsdescriptioneditor.OWLExpressionChecker;
 import org.protege.editor.owl.ui.view.AbstractOWLViewComponent;
 import org.semanticweb.owlapi.model.OWLClass;
 import org.semanticweb.owlapi.model.OWLClassExpression;
-import org.semanticweb.owlapi.model.OWLClassExpressionVisitor;
-import org.semanticweb.owlapi.model.OWLDataAllValuesFrom;
-import org.semanticweb.owlapi.model.OWLDataExactCardinality;
-import org.semanticweb.owlapi.model.OWLDataHasValue;
-import org.semanticweb.owlapi.model.OWLDataMaxCardinality;
-import org.semanticweb.owlapi.model.OWLDataMinCardinality;
-import org.semanticweb.owlapi.model.OWLDataSomeValuesFrom;
 import org.semanticweb.owlapi.model.OWLException;
-import org.semanticweb.owlapi.model.OWLObjectAllValuesFrom;
-import org.semanticweb.owlapi.model.OWLObjectComplementOf;
-import org.semanticweb.owlapi.model.OWLObjectExactCardinality;
-import org.semanticweb.owlapi.model.OWLObjectHasSelf;
-import org.semanticweb.owlapi.model.OWLObjectHasValue;
 import org.semanticweb.owlapi.model.OWLObjectIntersectionOf;
-import org.semanticweb.owlapi.model.OWLObjectMaxCardinality;
-import org.semanticweb.owlapi.model.OWLObjectMinCardinality;
-import org.semanticweb.owlapi.model.OWLObjectOneOf;
 import org.semanticweb.owlapi.model.OWLObjectProperty;
 import org.semanticweb.owlapi.model.OWLObjectSomeValuesFrom;
-import org.semanticweb.owlapi.model.OWLObjectUnionOf;
 import org.semanticweb.owlapi.model.OWLOntology;
 import org.semanticweb.owlapi.util.OWLClassExpressionVisitorAdapter;
-import org.semanticweb.owlapi.util.OWLObjectVisitorAdapter;
 
 import br.ufpe.cin.aac3.gryphon.Gryphon;
 import br.ufpe.cin.aac3.gryphon.Gryphon.ResultFormat;
 import br.ufpe.cin.aac3.gryphon.GryphonConfig;
 import br.ufpe.cin.aac3.gryphon.model.Database;
 import br.ufpe.cin.aac3.gryphon.model.Ontology;
+import br.ufpe.cin.integrativocbr.CycleResult;
 import br.ufpe.cin.integrativocbr.IntegrativoCBRApplication;
 import br.ufpe.cin.integrativocbr.event.CBREventListener;
 
 public class OWLClassExpressionEditorViewComponent extends AbstractOWLViewComponent {
 
 	private static final long serialVersionUID = 1L;
+	private static final String MAPPING_FILE = "db_localhost_3306_uniprot.ttl";
+
 	private ExpressionEditor<OWLClassExpression> expressionEditor;
-	
+
 	@Override
 	protected void initialiseOWLView() throws Exception {
 		setLayout(new BorderLayout(10, 10));
@@ -141,9 +126,19 @@ public class OWLClassExpressionEditorViewComponent extends AbstractOWLViewCompon
 				testAxiomsButtonAction();			
 			}
 		});
+	
+		JButton testClassesInMappingButton = new JButton();
+		testClassesInMappingButton.setText("Classes no Mapeamento");
+		testClassesInMappingButton.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				testClassesInMappingButtonAction();
+			}
+		});
 		
 		JPanel buttonsPanel = new JPanel();
 		buttonsPanel.setLayout(new FlowLayout());
+		buttonsPanel.add(testClassesInMappingButton);
 		buttonsPanel.add(testAxiomsButton);
 		buttonsPanel.add(testCBRButton);
 		buttonsPanel.add(testGryphonButton);
@@ -151,6 +146,108 @@ public class OWLClassExpressionEditorViewComponent extends AbstractOWLViewCompon
 		buttonsPanel.add(testOntologiesButton);
 		buttonsPanel.add(testGryphonQueryButton);
 		return buttonsPanel;
+	}
+	
+	private Set<String> readClassesInMapping(File mappingFile) {
+		Set<String> result = new HashSet<String>();
+		
+		try {
+			BufferedReader reader = new BufferedReader(new FileReader(mappingFile));
+			
+			// d2rq:class <http://purl.obolibrary.org/obo/GO_0008150>;
+			Pattern pattern = Pattern.compile("\\s+d2rq\\:class\\s+<(.+?)>;");
+			String line;
+			
+			while ((line = reader.readLine()) != null) {
+				Matcher matcher = pattern.matcher(line);
+				if (matcher.find()) {
+					result.add(matcher.group(1));
+				}
+			}
+			
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		
+		return result;
+	}
+	
+	private void testClassesInMappingButtonAction() {
+		new ProgressDialogWorker(null) {
+			
+			private Set<String> classesInMapping;
+			
+			@Override
+			protected Object doInBackground() throws Exception {
+				initGryphon();
+				File mappingFile = new File(Gryphon.getMapFolder() + "/" + MAPPING_FILE); 
+				
+				if (mappingFile.exists()) {
+					publish("Mapping file found in: " + mappingFile.getAbsolutePath());
+				} else {
+					publish("Mapping file NOT found in: " + mappingFile.getAbsolutePath());
+				}
+				publish("");
+				classesInMapping = readClassesInMapping(mappingFile);
+				publish("Classes in Mapping: " + classesInMapping);
+				
+				List<OWLClass> owlClassList = new ArrayList<OWLClass>();
+				publish("");
+				OWLClassExpression classExpression = expressionEditor.createObject();
+				for (OWLClass owlClass : classExpression.getClassesInSignature()) {
+					publish("Searching mapping for class: " + owlClass.getIRI());
+					OWLClass classInMapping = searchClassInMapping(owlClass);
+					publish("Class in mapping: " + classInMapping);
+					if (classInMapping == null) {
+						publish("Class " + owlClass.toString() + " NOT found in mapping! Exiting.");
+						return null;
+					}
+					owlClassList.add(classInMapping);
+				}
+				
+				publish("\nFound these classes on mapping: " + owlClassList);
+				publish("\nInitializing CBR...");
+				IntegrativoCBRApplication.executeCBR(new CBREventListener() {
+
+					@Override
+					public void beforeCreateGryphonConnector(String classIRI) {
+						publish("Creating connector: " + classIRI);
+					}
+
+					@Override
+					public void beforeCycle(String classIRI) {
+						publish("Cycle: " + classIRI);
+					}
+
+					@Override
+					public void onResultCycle(CycleResult cycleResult) {
+						publish("Result: " + cycleResult);
+					}
+					
+				}, classesInMapping.toArray(new String[classesInMapping.size()]));
+
+				return null;
+			}
+			
+			private OWLClass searchClassInMapping(OWLClass owlClass) {
+				if (classesInMapping.contains(owlClass.toStringID())) {
+					publish("Mapping found for: " + owlClass.toStringID());
+					return owlClass;
+				} else {
+					publish("Mapping NOT found for: " + owlClass.toStringID() + ". Searching superclass...");
+					for (OWLClassExpression owlClassExpression : owlClass.getSuperClasses(getOWLModelManager().getActiveOntology())) {
+						OWLClass owlClassAux = searchClassInMapping(owlClassExpression.asOWLClass());
+						if (owlClassAux != null) {
+							return owlClassAux;
+						}
+					}
+					return null;
+				}
+			}
+			
+		}.execute();
 	}
 	
 	private void testAxiomsButtonAction() {
@@ -186,6 +283,7 @@ public class OWLClassExpressionEditorViewComponent extends AbstractOWLViewCompon
 			for (NewAxiom newAxiom : newAxioms) {
 				System.out.println(newAxiom);
 			}
+			System.out.println("-----------");
 		} catch (OWLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -216,7 +314,6 @@ public class OWLClassExpressionEditorViewComponent extends AbstractOWLViewCompon
 						@Override
 						public void beforeCreateGryphonConnector(String classIRI) {
 							publish("Creating connector: " + classIRI);
-							
 						}
 
 						@Override
@@ -225,8 +322,8 @@ public class OWLClassExpressionEditorViewComponent extends AbstractOWLViewCompon
 						}
 
 						@Override
-						public void beforeResultCycle(String classIRI) {
-							publish("Result: " + classIRI);
+						public void onResultCycle(CycleResult cycleResult) {
+							publish("Result: " + cycleResult);
 						}
 						
 					}, classesIRI);
@@ -311,12 +408,16 @@ public class OWLClassExpressionEditorViewComponent extends AbstractOWLViewCompon
 		return converter.convert(expressionEditor.createObject(), "?x", false);
 	}
 	
-	private void testGryphonQueryButtonAction() {
+	private void initGryphon() {
 		GryphonConfig.setWorkingDirectory(new File(System.getProperty("user.home"), "/mst/GryphonFramework/integrationExample"));
 		GryphonConfig.setLogEnabled(true);
 		GryphonConfig.setShowLogo(true);
 		Gryphon.init();
-
+	}
+	
+	private void testGryphonQueryButtonAction() {
+		initGryphon();
+		
 		OWLOntology globalOnto = getOWLModelManager().getActiveOntology();
 		Gryphon.setGlobalOntology(createGryphonOntology(globalOnto));
 		

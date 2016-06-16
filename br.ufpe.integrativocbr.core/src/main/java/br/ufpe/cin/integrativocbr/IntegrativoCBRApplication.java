@@ -122,6 +122,7 @@ public class IntegrativoCBRApplication implements StandardCBRApplication {
 				app.postCycle();
 				
 				cycleResults[i] = app.getCycleResult();
+				cbrEventListener.onResultCycle(app.getCycleResult());
 			}
 
 			// Average
@@ -170,23 +171,6 @@ public class IntegrativoCBRApplication implements StandardCBRApplication {
 	
 	private void setCurrentConnector(GryphonConnector connector) {
 		this.currentConnector = connector;
-	}
-	
-	private class CycleResult {
-		private double evalResult;
-		private String classId;
-
-		public CycleResult(double evalResult, String classId) {
-			this.evalResult = evalResult;
-			this.classId = classId;
-		}
-		
-		public double getEvalResult() {
-			return evalResult;
-		}
-		public String getClassId() {
-			return classId;
-		}
 	}
 	
 	public CycleResult getCycleResult() {

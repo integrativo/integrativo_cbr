@@ -1,5 +1,7 @@
 package br.ufpe.cin.integrativocbr.event;
 
+import br.ufpe.cin.integrativocbr.CycleResult;
+
 public class CBREventAdapter implements CBREventListener {
 
 	@Override
@@ -11,7 +13,7 @@ public class CBREventAdapter implements CBREventListener {
 	}
 
 	@Override
-	public void beforeResultCycle(String classIRI) {
+	public void onResultCycle(CycleResult cycleResult) {
 	}
 
 }

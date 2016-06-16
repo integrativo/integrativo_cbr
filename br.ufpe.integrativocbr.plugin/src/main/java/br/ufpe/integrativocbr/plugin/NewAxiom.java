@@ -2,7 +2,6 @@ package br.ufpe.integrativocbr.plugin;
 
 import java.net.URI;
 
-import org.protege.editor.owl.ProtegeOWL;
 import org.semanticweb.owlapi.apibinding.OWLManager;
 import org.semanticweb.owlapi.model.IRI;
 import org.semanticweb.owlapi.model.OWLAnnotation;
