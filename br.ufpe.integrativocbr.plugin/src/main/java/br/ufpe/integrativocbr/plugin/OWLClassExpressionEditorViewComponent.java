@@ -15,9 +15,11 @@ import java.io.FileWriter;
 import java.io.FilenameFilter;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -196,7 +198,7 @@ public class OWLClassExpressionEditorViewComponent extends AbstractOWLViewCompon
 				classesInMapping = readClassesInMapping(mappingFile);
 				publish("Classes in Mapping: " + classesInMapping);
 				
-				List<OWLClass> owlClassList = new ArrayList<OWLClass>();
+				Map<OWLClass, OWLClass> owlClassMap = new HashMap<OWLClass, OWLClass>();
 				publish("");
 				OWLClassExpression classExpression = expressionEditor.createObject();
 				for (OWLClass owlClass : classExpression.getClassesInSignature()) {
@@ -207,29 +209,57 @@ public class OWLClassExpressionEditorViewComponent extends AbstractOWLViewCompon
 						publish("Class " + owlClass.toString() + " NOT found in mapping! Exiting.");
 						return null;
 					}
-					owlClassList.add(classInMapping);
+					owlClassMap.put(owlClass, classInMapping);
 				}
 				
-				publish("\nFound these classes on mapping: " + owlClassList);
-				publish("\nInitializing CBR...");
-				IntegrativoCBRApplication.executeCBR(new CBREventListener() {
-
-					@Override
-					public void beforeCreateGryphonConnector(String classIRI) {
-						publish("Creating connector: " + classIRI);
+				publish("\nFound these classes on mapping: " + owlClassMap);
+				
+				publish("\nMaking Gryphon query...");
+				Set<OWLClassExpression> classExprSet = classExpression.getNestedClassExpressions();
+				Set<OWLClassExpression> newClassExprSet = new HashSet<OWLClassExpression>();
+				
+				for (OWLClassExpression classExpr : classExprSet) {
+					OWLClassExpression newClassExpr = owlClassMap.get(classExpr);
+					if (newClassExpr != null) {
+						newClassExprSet.add(newClassExpr);
+					} else {
+						newClassExprSet.add(classExpr);
 					}
-
-					@Override
-					public void beforeCycle(String classIRI) {
-						publish("Cycle: " + classIRI);
-					}
-
-					@Override
-					public void onResultCycle(CycleResult cycleResult) {
-						publish("Result: " + cycleResult);
-					}
-					
-				}, classesInMapping.toArray(new String[classesInMapping.size()]));
+				}
+				
+				OWLClassExpression newExpression = null; 
+				if (classExpression instanceof OWLObjectIntersectionOf) {
+					newExpression = getOWLDataFactory().getOWLObjectIntersectionOf(newClassExprSet);
+				} else {
+					publish("I don't know how to handle: " + classExpression.getClass().getName());
+				}
+				
+				if (newExpression != null) {
+					publish("OLD SPARQL:");
+					publish(convertToSparqlQuery(classExpression));
+					publish("New SPARQL:");
+					publish(convertToSparqlQuery(newExpression));
+				}
+				
+//				publish("\nInitializing CBR...");
+//				IntegrativoCBRApplication.executeCBR(new CBREventListener() {
+//
+//					@Override
+//					public void beforeCreateGryphonConnector(String classIRI) {
+//						publish("Creating connector: " + classIRI);
+//					}
+//
+//					@Override
+//					public void beforeCycle(String classIRI) {
+//						publish("Cycle: " + classIRI);
+//					}
+//
+//					@Override
+//					public void onResultCycle(CycleResult cycleResult) {
+//						publish("Result: " + cycleResult);
+//					}
+//					
+//				}, classesInMapping.toArray(new String[classesInMapping.size()]));
 
 				return null;
 			}
@@ -448,14 +478,18 @@ public class OWLClassExpressionEditorViewComponent extends AbstractOWLViewCompon
 				onto.getOWLOntologyManager().getOntologyDocumentIRI(onto).toURI());
 	}
 	
-	private String convertToSparqlQuery() throws OWLException {
+	private String convertToSparqlQuery(OWLClassExpression owlClassExpr) {
 		OWLClassExpressionToSPARQLConverter converter = new OWLClassExpressionToSPARQLConverter();
 		
 		// to fill internal variables in converter
-		converter.asGroupGraphPattern(expressionEditor.createObject(), "?x");
+		converter.asGroupGraphPattern(owlClassExpr, "?x");
 		
 		// real conversion
-		return converter.convert(expressionEditor.createObject(), "?x", false);
+		return converter.convert(owlClassExpr, "?x", false);
+	}
+	
+	private String convertToSparqlQuery() throws OWLException {
+		return convertToSparqlQuery(expressionEditor.createObject());
 	}
 	
 	private void initGryphon() {
