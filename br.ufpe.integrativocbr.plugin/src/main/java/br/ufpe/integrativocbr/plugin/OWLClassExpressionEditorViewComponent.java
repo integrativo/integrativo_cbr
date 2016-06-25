@@ -187,6 +187,7 @@ public class OWLClassExpressionEditorViewComponent extends AbstractOWLViewCompon
 			@Override
 			protected Object doInBackground() throws Exception {
 				initGryphon();
+
 				File mappingFile = new File(Gryphon.getMapFolder() + "/" + MAPPING_FILE); 
 				
 				if (mappingFile.exists()) {
@@ -215,17 +216,8 @@ public class OWLClassExpressionEditorViewComponent extends AbstractOWLViewCompon
 				publish("\nFound these classes on mapping: " + owlClassMap);
 				
 				publish("\nMaking Gryphon query...");
-				Set<OWLClassExpression> classExprSet = classExpression.getNestedClassExpressions();
-				Set<OWLClassExpression> newClassExprSet = new HashSet<OWLClassExpression>();
-				
-				for (OWLClassExpression classExpr : classExprSet) {
-					OWLClassExpression newClassExpr = owlClassMap.get(classExpr);
-					if (newClassExpr != null) {
-						newClassExprSet.add(newClassExpr);
-					} else {
-						newClassExprSet.add(classExpr);
-					}
-				}
+				Set<OWLClassExpression> classExprSet = classExpression.asConjunctSet();
+				Set<OWLClassExpression> newClassExprSet = replaceClasses(classExprSet, owlClassMap);
 				
 				OWLClassExpression newExpression = null; 
 				if (classExpression instanceof OWLObjectIntersectionOf) {
@@ -238,7 +230,42 @@ public class OWLClassExpressionEditorViewComponent extends AbstractOWLViewCompon
 					publish("OLD SPARQL:");
 					publish(convertToSparqlQuery(classExpression));
 					publish("New SPARQL:");
-					publish(convertToSparqlQuery(newExpression));
+					
+					String newSparql = convertToSparqlQuery(newExpression);
+					publish(newSparql);
+				
+					publish("Querying Gryphon...");
+					Gryphon.query(newSparql, ResultFormat.JSON);
+				
+					File resultFolder = Gryphon.getResultFolder();
+					File resultFile = new File(resultFolder, "db_localhost_3306_uniprot.json");
+					BufferedReader reader;
+					try {
+						reader = new BufferedReader(new FileReader(resultFile));
+						try {
+							String line;
+							StringBuilder text = new StringBuilder();
+							while ((line = reader.readLine()) != null) {
+								text.append(line);
+								text.append("\n");
+								if (text.length() > 400) {
+									text.append("\n(...)");
+									break;
+								}
+							}
+							publish(text.toString());
+						} catch (IOException e) {
+							e.printStackTrace();
+						} finally {
+							try {
+								reader.close();
+							} catch (IOException e) {
+								e.printStackTrace();
+							}
+						}
+					} catch (FileNotFoundException e1) {
+						e1.printStackTrace();
+					}
 				}
 				
 //				publish("\nInitializing CBR...");
@@ -264,6 +291,20 @@ public class OWLClassExpressionEditorViewComponent extends AbstractOWLViewCompon
 				return null;
 			}
 			
+			private Set<OWLClassExpression> replaceClasses(
+					Set<OWLClassExpression> classExprSet, Map<OWLClass, OWLClass> owlClassMap) {
+				Set<OWLClassExpression> newClassExprSet = new HashSet<OWLClassExpression>();
+				for (OWLClassExpression classExpr : classExprSet) {
+					OWLClass owlClass = owlClassMap.get(classExpr);
+					if (owlClass == null) {
+						newClassExprSet.add(classExpr);
+					} else {
+						newClassExprSet.add(owlClass);
+					}
+				}
+				return newClassExprSet;
+			}
+
 			private OWLClass searchClassInMapping(OWLClass owlClass) {
 				if (classesInMapping.contains(owlClass.toStringID())) {
 					publish("Mapping found for: " + owlClass.toStringID());
@@ -497,12 +538,7 @@ public class OWLClassExpressionEditorViewComponent extends AbstractOWLViewCompon
 		GryphonConfig.setLogEnabled(true);
 		GryphonConfig.setShowLogo(true);
 		Gryphon.init();
-	}
-	
-	private void testGryphonQueryButtonAction() {
-//		generateMappings();
-		initGryphon();
-
+		
 		OWLOntology globalOnto = getOWLModelManager().getActiveOntology();
 		Gryphon.setGlobalOntology(createGryphonOntology(globalOnto));
 		
@@ -510,13 +546,18 @@ public class OWLClassExpressionEditorViewComponent extends AbstractOWLViewCompon
 		for (OWLOntology ontoImport : ontoImports) {
 			Gryphon.addLocalOntology(createGryphonOntology(ontoImport));
 		}
-		
-		
+
 		Database localDB = new Database("localhost", 3306, "root", "admin123", "uniprot", Gryphon.DBMS.MySQL);
 		Gryphon.addLocalDatabase(localDB);
 		
 		// Gryphon.alignAndMap();
-		
+	}
+	
+	private void testGryphonQueryButtonAction() {
+//		generateMappings();
+		initGryphon();
+
+		// Gryphon.alignAndMap();
 		String sparqlQuery = null;
 		try {
 			sparqlQuery = convertToSparqlQuery();

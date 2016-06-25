@@ -49,6 +49,7 @@
 <!-- 			<artifactId>gryphon-framework</artifactId> -->
 <!-- 			<version>0.0.1-SNAPSHOT</version> -->
 <!-- 		</dependency> -->
+
 		<dependency>
 			<groupId>br.ufpe.integrativocbr</groupId>
 			<artifactId>integrativocbr-core</artifactId>
@@ -61,16 +62,21 @@
 			</exclusions>
 		</dependency>
 		<dependency>
-			<groupId>org.aksw.owl2sparql</groupId>
-			<artifactId>owl2sparql-core</artifactId>
-			<version>0.1-SNAPSHOT</version>
-		</dependency>
-		<dependency>
 			<groupId>mysql</groupId>
 			<artifactId>mysql-connector-java</artifactId>
 			<version>5.1.38</version>
 		</dependency>
-		
+		<dependency>
+			<groupId>org.aksw.owl2sparql</groupId>
+			<artifactId>owl2sparql-core</artifactId>
+			<version>0.1-SNAPSHOT</version>
+			<exclusions>
+				<exclusion>
+					<artifactId>commons-codec</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+
 <!-- 		<dependency> -->
 <!-- 			<groupId>edu.stanford.protege</groupId> -->
 <!-- 			<artifactId>org.protege.editor.core.application</artifactId> -->
