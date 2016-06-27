@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
+	<classpathentry exported="true" kind="lib" path="libs/maven/owlapi-distribution-3.5.3.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/maven/gryphon-framework-0.0.1-SNAPSHOT.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/maven/commons-codec-1.6.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/maven/guava-18.0.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/maven/httpclient-4.2.3.jar"/>
@@ -15,7 +17,6 @@
 	<classpathentry exported="true" kind="lib" path="libs/maven/mysql-connector-java-5.1.38.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/maven/ontobridge-latest.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/maven/owl2sparql-core-0.1-SNAPSHOT.jar"/>
-	<classpathentry exported="true" kind="lib" path="libs/maven/owlapi-distribution-3.5.3.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/maven/slf4j-api-1.6.4.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/maven/slf4j-log4j12-1.6.4.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/maven/trove4j-3.0.3.jar"/>

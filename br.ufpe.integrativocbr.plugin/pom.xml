@@ -44,12 +44,17 @@
 	</repositories>
 
 	<dependencies>
-<!-- 		<dependency> -->
-<!-- 			<groupId>gryphon-framework</groupId> -->
-<!-- 			<artifactId>gryphon-framework</artifactId> -->
-<!-- 			<version>0.0.1-SNAPSHOT</version> -->
-<!-- 		</dependency> -->
-
+		<dependency>
+			<groupId>gryphon-framework</groupId>
+			<artifactId>gryphon-framework</artifactId>
+			<version>0.0.1-SNAPSHOT</version>
+			<exclusions>
+				<exclusion>
+					<groupId>org.openrdf.sesame</groupId>
+					<artifactId>sesame-runtime</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
 		<dependency>
 			<groupId>br.ufpe.integrativocbr</groupId>
 			<artifactId>integrativocbr-core</artifactId>
@@ -70,12 +75,9 @@
 			<groupId>org.aksw.owl2sparql</groupId>
 			<artifactId>owl2sparql-core</artifactId>
 			<version>0.1-SNAPSHOT</version>
-			<exclusions>
-				<exclusion>
-					<artifactId>commons-codec</artifactId>
-				</exclusion>
-			</exclusions>
 		</dependency>
+
+
 
 <!-- 		<dependency> -->
 <!-- 			<groupId>edu.stanford.protege</groupId> -->
