@@ -30,17 +30,17 @@
 	</build>
 
 	<repositories>
-	    <repository>
-		<id>maven.aksw.internal</id>
-		<name>University Leipzig, AKSW Maven2 Repository</name>
-		<url>http://maven.aksw.org/archiva/repository/internal</url>
-	    </repository>
+		<repository>
+			<id>maven.aksw.internal</id>
+			<name>University Leipzig, AKSW Maven2 Repository</name>
+			<url>http://maven.aksw.org/archiva/repository/internal</url>
+		</repository>
 
-	    <repository>
-		<id>maven.aksw.snapshots</id>
-		<name>University Leipzig, AKSW Maven2 Repository</name>
-		<url>http://maven.aksw.org/archiva/repository/snapshots</url>
-	    </repository>
+		<repository>
+			<id>maven.aksw.snapshots</id>
+			<name>University Leipzig, AKSW Maven2 Repository</name>
+			<url>http://maven.aksw.org/archiva/repository/snapshots</url>
+		</repository>
 	</repositories>
 
 	<dependencies>
@@ -80,19 +80,29 @@
 			<groupId>org.aksw.owl2sparql</groupId>
 			<artifactId>owl2sparql-core</artifactId>
 			<version>0.1-SNAPSHOT</version>
+			<exclusions>
+				<exclusion>
+					<groupId>commons-codec</groupId>
+					<artifactId>commons-codec</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>org.slf4j</groupId>
+					<artifactId>slf4j-api</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 
 
 
-<!-- 		<dependency> -->
-<!-- 			<groupId>edu.stanford.protege</groupId> -->
-<!-- 			<artifactId>org.protege.editor.core.application</artifactId> -->
-<!-- 			<version>5.0.0-beta-04</version> -->
-<!-- 		</dependency> -->
-<!-- 		<dependency> -->
-<!-- 			<groupId>edu.stanford.protege</groupId> -->
-<!-- 			<artifactId>org.protege.editor.owl</artifactId> -->
-<!-- 			<version>5.0.0-beta-04</version> -->
-<!-- 		</dependency> -->
+		<!-- <dependency> -->
+		<!-- <groupId>edu.stanford.protege</groupId> -->
+		<!-- <artifactId>org.protege.editor.core.application</artifactId> -->
+		<!-- <version>5.0.0-beta-04</version> -->
+		<!-- </dependency> -->
+		<!-- <dependency> -->
+		<!-- <groupId>edu.stanford.protege</groupId> -->
+		<!-- <artifactId>org.protege.editor.owl</artifactId> -->
+		<!-- <version>5.0.0-beta-04</version> -->
+		<!-- </dependency> -->
 	</dependencies>
 </project>
