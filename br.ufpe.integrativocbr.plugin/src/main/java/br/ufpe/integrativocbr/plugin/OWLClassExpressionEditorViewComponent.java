@@ -186,111 +186,132 @@ public class OWLClassExpressionEditorViewComponent extends AbstractOWLViewCompon
 			
 			@Override
 			protected Object doInBackground() throws Exception {
-				initGryphon();
-
-				File mappingFile = new File(Gryphon.getMapFolder() + "/" + MAPPING_FILE); 
-				
-				if (mappingFile.exists()) {
-					publish("Mapping file found in: " + mappingFile.getAbsolutePath());
-				} else {
-					publish("Mapping file NOT found in: " + mappingFile.getAbsolutePath());
-				}
-				publish("");
-				classesInMapping = readClassesInMapping(mappingFile);
-				publish("Classes in Mapping: " + classesInMapping);
-				
-				Map<OWLClass, OWLClass> owlClassMap = new HashMap<OWLClass, OWLClass>();
-				publish("");
-				OWLClassExpression classExpression = expressionEditor.createObject();
-				for (OWLClass owlClass : classExpression.getClassesInSignature()) {
-					publish("Searching mapping for class: " + owlClass.getIRI());
-					OWLClass classInMapping = searchClassInMapping(owlClass);
-					publish("Class in mapping: " + classInMapping);
-					if (classInMapping == null) {
-						publish("Class " + owlClass.toString() + " NOT found in mapping! Exiting.");
-						return null;
-					}
-					owlClassMap.put(owlClass, classInMapping);
-				}
-				
-				publish("\nFound these classes on mapping: " + owlClassMap);
-				
-				publish("\nMaking Gryphon query...");
-				Set<OWLClassExpression> classExprSet = classExpression.asConjunctSet();
-				Set<OWLClassExpression> newClassExprSet = replaceClasses(classExprSet, owlClassMap);
-				
-				OWLClassExpression newExpression = null; 
-				if (classExpression instanceof OWLObjectIntersectionOf) {
-					newExpression = getOWLDataFactory().getOWLObjectIntersectionOf(newClassExprSet);
-				} else {
-					publish("I don't know how to handle: " + classExpression.getClass().getName());
-				}
-				
-				if (newExpression != null) {
-					publish("OLD SPARQL:");
-					publish(convertToSparqlQuery(classExpression));
-					publish("New SPARQL:");
+				try {
+					initGryphon();
+	
+					File mappingFile = new File(Gryphon.getMapFolder() + "/" + MAPPING_FILE); 
 					
-					String newSparql = convertToSparqlQuery(newExpression);
-					publish(newSparql);
-				
-					publish("Querying Gryphon...");
-					Gryphon.query(newSparql, ResultFormat.JSON);
-				
-					File resultFolder = Gryphon.getResultFolder();
-					File resultFile = new File(resultFolder, "db_localhost_3306_uniprot.json");
-					BufferedReader reader;
-					try {
-						reader = new BufferedReader(new FileReader(resultFile));
+					if (mappingFile.exists()) {
+						publish("Mapping file found in: " + mappingFile.getAbsolutePath());
+					} else {
+						publish("Mapping file NOT found in: " + mappingFile.getAbsolutePath());
+					}
+					publish("");
+					classesInMapping = readClassesInMapping(mappingFile);
+					publish("Classes in Mapping: " + classesInMapping);
+					
+					Map<OWLClass, OWLClass> owlClassMap = new HashMap<OWLClass, OWLClass>();
+					publish("");
+					OWLClassExpression classExpression = expressionEditor.createObject();
+					for (OWLClass owlClass : classExpression.getClassesInSignature()) {
+						publish("Searching mapping for class: " + owlClass.getIRI());
+						OWLClass classInMapping = searchClassInMapping(owlClass);
+						publish("Class in mapping: " + classInMapping);
+						if (classInMapping == null) {
+							publish("Class " + owlClass.toString() + " NOT found in mapping! Exiting.");
+							return null;
+						}
+						owlClassMap.put(owlClass, classInMapping);
+					}
+					
+					publish("\nFound these classes on mapping: " + owlClassMap);
+					
+					publish("\nMaking Gryphon query...");
+					Set<OWLClassExpression> classExprSet = classExpression.asConjunctSet();
+					Set<OWLClassExpression> newClassExprSet = replaceClasses(classExprSet, owlClassMap);
+					
+					OWLClassExpression newExpression = null; 
+					if (classExpression instanceof OWLObjectIntersectionOf) {
+						newExpression = getOWLDataFactory().getOWLObjectIntersectionOf(newClassExprSet);
+					} else {
+						publish("I don't know how to handle: " + classExpression.getClass().getName());
+					}
+					
+					if (newExpression != null) {
+						publish("OLD SPARQL:");
+						publish(convertToSparqlQuery(classExpression));
+						publish("New SPARQL:");
+						
+						String newSparql = convertToSparqlQuery(newExpression);
+						publish(newSparql);
+						
+						newSparql = includeLabelsAxiomInSparql(newSparql, classExpression.getClassesInSignature());
+						publish("Including labels in SPARQL:");
+						publish(newSparql);
+						
+						publish("Querying Gryphon...");
+						Gryphon.query(newSparql, ResultFormat.JSON);
+					
+						File resultFolder = Gryphon.getResultFolder();
+						File resultFile = new File(resultFolder, "db_localhost_3306_uniprot.json");
+						BufferedReader reader;
 						try {
-							String line;
-							StringBuilder text = new StringBuilder();
-							while ((line = reader.readLine()) != null) {
-								text.append(line);
-								text.append("\n");
-								if (text.length() > 400) {
-									text.append("\n(...)");
-									break;
-								}
-							}
-							publish(text.toString());
-						} catch (IOException e) {
-							e.printStackTrace();
-						} finally {
+							reader = new BufferedReader(new FileReader(resultFile));
 							try {
-								reader.close();
+								String line;
+								StringBuilder text = new StringBuilder();
+								while ((line = reader.readLine()) != null) {
+									text.append(line);
+									text.append("\n");
+									if (text.length() > 400) {
+										text.append("\n(...)");
+										break;
+									}
+								}
+								publish(text.toString());
 							} catch (IOException e) {
 								e.printStackTrace();
+							} finally {
+								try {
+									reader.close();
+								} catch (IOException e) {
+									e.printStackTrace();
+								}
 							}
+						} catch (FileNotFoundException e1) {
+							e1.printStackTrace();
 						}
-					} catch (FileNotFoundException e1) {
-						e1.printStackTrace();
 					}
+					
+					publish("\nInitializing CBR...");
+					Set<OWLClass> classesInSignature = newExpression.getClassesInSignature();
+					Iterator<OWLClass> classesInSignatureIterator = classesInSignature.iterator();
+					String[] classesInSignatureArray = new String[classesInSignature.size()];
+					
+					for (int i = 0; i < classesInSignature.size(); i++) {
+						classesInSignatureArray[i] = classesInSignatureIterator.next().toStringID();
+					}
+					
+					IntegrativoCBRApplication.executeCBR(new CBREventListener() {
+	
+						@Override
+						public void beforeCreateGryphonConnector(String classIRI) {
+							publish("Creating connector: " + classIRI);
+						}
+	
+						@Override
+						public void beforeCycle(String classIRI) {
+							publish("Cycle: " + classIRI);
+						}
+	
+						@Override
+						public void onResultCycle(CycleResult cycleResult) {
+							publish("Result: " + cycleResult);
+						}
+						
+					}, classesInSignatureArray);
+				} catch (Exception e) {
+					e.printStackTrace();
 				}
-				
-//				publish("\nInitializing CBR...");
-//				IntegrativoCBRApplication.executeCBR(new CBREventListener() {
-//
-//					@Override
-//					public void beforeCreateGryphonConnector(String classIRI) {
-//						publish("Creating connector: " + classIRI);
-//					}
-//
-//					@Override
-//					public void beforeCycle(String classIRI) {
-//						publish("Cycle: " + classIRI);
-//					}
-//
-//					@Override
-//					public void onResultCycle(CycleResult cycleResult) {
-//						publish("Result: " + cycleResult);
-//					}
-//					
-//				}, classesInMapping.toArray(new String[classesInMapping.size()]));
-
 				return null;
 			}
 			
+			private String includeLabelsAxiomInSparql(String newSparql, Set<OWLClass> owlClasses) {
+				return "PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>\n" 
+					+ newSparql.replace("}", "?x rdfs:label ?labelx .\n?s1 rdfs:label ?labels1 .\n}")
+							   .replace("SELECT  DISTINCT ?x", "SELECT DISTINCT ?labelx ?labels1");
+			}
+
 			private Set<OWLClassExpression> replaceClasses(
 					Set<OWLClassExpression> classExprSet, Map<OWLClass, OWLClass> owlClassMap) {
 				Set<OWLClassExpression> newClassExprSet = new HashSet<OWLClassExpression>();
