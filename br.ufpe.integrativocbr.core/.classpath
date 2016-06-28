@@ -2,6 +2,8 @@
 <classpath>
 	<classpathentry kind="src" path="src/main/java"/>
 	<classpathentry kind="src" path="src/main/resources"/>
+	<classpathentry exported="true" kind="lib" path="libs/maven/jcolibri-2.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/maven/log4j-1.2.17.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/maven/commons-codec-1.6.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/maven/httpclient-4.2.3.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/maven/httpcore-4.2.2.jar"/>
@@ -10,7 +12,6 @@
 	<classpathentry exported="true" kind="lib" path="libs/maven/jena-core-2.11.0.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/maven/jena-iri-1.0.0.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/maven/json-20140107.jar"/>
-	<classpathentry exported="true" kind="lib" path="libs/maven/log4j-1.2.16.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/maven/ontobridge-latest.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/maven/slf4j-api-1.6.4.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/maven/slf4j-log4j12-1.6.4.jar"/>

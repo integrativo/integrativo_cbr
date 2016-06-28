@@ -21,6 +21,7 @@ public abstract class ProgressDialogWorker extends SwingWorker<Object, String> {
 
 	@Override
 	protected void done() {
+		progressDialog.appendText("-- END OF PROCESSING --");
 		progressDialog.showCloseButton();
 	}
 	
