@@ -1,6 +1,7 @@
 package br.ufpe.cin.integrativocbr.event;
 
 import br.ufpe.cin.integrativocbr.CycleResult;
+import br.ufpe.cin.integrativocbr.GryphonResult;
 
 public class CBREventAdapter implements CBREventListener {
 
@@ -13,7 +14,7 @@ public class CBREventAdapter implements CBREventListener {
 	}
 
 	@Override
-	public void onResultCycle(CycleResult cycleResult) {
+	public void onResultCycle(GryphonResult gryphonResult,
+			CycleResult[] cycleResults, double average) {
 	}
-
 }

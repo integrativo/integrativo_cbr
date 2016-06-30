@@ -122,7 +122,6 @@ public class IntegrativoCBRApplication implements StandardCBRApplication {
 				app.postCycle();
 				
 				cycleResults[i] = app.getCycleResult();
-				cbrEventListener.onResultCycle(app.getCycleResult());
 			}
 
 			// Average
@@ -138,7 +137,9 @@ public class IntegrativoCBRApplication implements StandardCBRApplication {
 				classLetter++;
 				evalResultSum += cycleResult.getEvalResult();
 			}
-			System.out.println("   >> average = " + evalResultSum / cycleResults.length);
+			double average = evalResultSum / cycleResults.length;
+			System.out.println("   >> average = " + average);
+			cbrEventListener.onResultCycle(gryphonResult, cycleResults, average);
 		}
 	}
 

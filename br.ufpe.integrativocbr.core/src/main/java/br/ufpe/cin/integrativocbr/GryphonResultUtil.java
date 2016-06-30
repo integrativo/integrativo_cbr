@@ -42,7 +42,8 @@ public class GryphonResultUtil {
 		return label.replaceAll("\\(.*?\\)$", "")
 				.replaceFirst("organism #", "")
 				.replaceFirst("biological_process #", "")
-				.replaceFirst("cellular_component #", "");
+				.replaceFirst("cellular_component #", "")
+				.replaceAll("\\[.*?\\]", "").trim();
 	}
 	
 	public static Set<GryphonResult> readResults(String resultFile) throws Exception {

@@ -14,7 +14,9 @@ public abstract class ProgressDialogWorker extends SwingWorker<Object, String> {
 	
 	protected void process(java.util.List<String> chunks) {
 		for (String chunk : chunks) {
-			progressDialog.setVisible(true);
+			if (!progressDialog.isVisible()) {
+				progressDialog.setVisible(true);
+			}
 			progressDialog.appendText(chunk);
 		}
 	}
