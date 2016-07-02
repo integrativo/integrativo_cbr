@@ -210,6 +210,14 @@ public class OWLClassExpressionEditorViewComponent extends AbstractOWLViewCompon
 					Set<OWLClassExpression> classExprSet, Map<OWLClass, OWLClass> owlClassMap) {
 				Set<OWLClassExpression> newClassExprSet = new HashSet<OWLClassExpression>();
 				for (OWLClassExpression classExpr : classExprSet) {
+					
+					if (classExpr instanceof OWLObjectSomeValuesFrom) {
+						OWLObjectSomeValuesFrom someValuesProp = ((OWLObjectSomeValuesFrom) classExpr);
+						OWLClass newFiller = owlClassMap.get(someValuesProp.getFiller());
+						classExpr = getOWLDataFactory().getOWLObjectSomeValuesFrom(
+								someValuesProp.getProperty(), newFiller);
+					}
+					
 					OWLClass owlClass = owlClassMap.get(classExpr);
 					if (owlClass == null) {
 						newClassExprSet.add(classExpr);
@@ -255,6 +263,7 @@ public class OWLClassExpressionEditorViewComponent extends AbstractOWLViewCompon
 
 			@Override
 			protected Object doInBackground() throws Exception {
+				long totalTimeMillis = System.currentTimeMillis();
 				try {
 					initGryphon();
 	
@@ -270,8 +279,6 @@ public class OWLClassExpressionEditorViewComponent extends AbstractOWLViewCompon
 					Map<OWLClass, OWLClass> owlClassMap = new HashMap<OWLClass, OWLClass>();
 					publish("");
 					final OWLClassExpression classExpression = expressionEditor.createObject();
-					
-					System.out.println(concatLabels(getOWLModelManager().getActiveOntologies(), classExpression.getClassesInSignature()));
 					
 					for (OWLClass owlClass : classExpression.getClassesInSignature()) {
 						publish("Searching mapping for class: " + owlClass.getIRI());
@@ -309,7 +316,7 @@ public class OWLClassExpressionEditorViewComponent extends AbstractOWLViewCompon
 						publish(newSparql);
 						
 						publish("Querying Gryphon...");
-						Gryphon.query(newSparql, ResultFormat.JSON);
+						// Gryphon.query(newSparql, ResultFormat.JSON);
 					
 						File resultFolder = Gryphon.getResultFolder();
 						File resultFile = new File(resultFolder, "db_localhost_3306_uniprot.json");
@@ -344,26 +351,17 @@ public class OWLClassExpressionEditorViewComponent extends AbstractOWLViewCompon
 					
 					publish("\nInitializing CBR...");
 					Set<OWLClass> classesInSignature = newExpression.getClassesInSignature();
-					final OWLClass[] classesInSignatureArray = new OWLClass[classesInSignature.size()];
-					String[] classesInSignatureStringIDArray = new String[classesInSignature.size()];
+					final String[] classesInSignatureStringIDArray = new String[classesInSignature.size()];
 					
 					// Q1 (2)
 //					classesInSignatureStringIDArray[0] = "http://purl.bioontology.org/ontology/NCBITAXON/131567";
 //					classesInSignatureStringIDArray[1] = "http://purl.obolibrary.org/obo/GO_0008150";
 					
 					// Q1
-					classesInSignatureStringIDArray[0] = "http://purl.bioontology.org/ontology/NCBITAXON/131567";
+					classesInSignatureStringIDArray[0] = "http://purl.obolibrary.org/obo/GO_0008150";
 					classesInSignatureStringIDArray[1] = "http://purl.obolibrary.org/obo/PR_000000001";
-					classesInSignatureStringIDArray[2] = "http://purl.obolibrary.org/obo/GO_0008150";
-					
-					
-//					Iterator<OWLClass> classesInSignatureIterator = classesInSignature.iterator();
-//					for (int i = classesInSignature.size() - 1; i >= 0; i--) {
-//						OWLClass owlClass = classesInSignatureIterator.next();
-//						classesInSignatureStringIDArray[i] = owlClass.toStringID();
-//						classesInSignatureArray[i] = owlClass;
-//					}
-					
+					classesInSignatureStringIDArray[2] = "http://purl.bioontology.org/ontology/NCBITAXON/131567";
+
 					IntegrativoCBRApplication.executeCBR(new CBREventListener() {
 	
 						@Override
@@ -378,23 +376,27 @@ public class OWLClassExpressionEditorViewComponent extends AbstractOWLViewCompon
 	
 						@Override
 						public void onResultCycle(GryphonResult gryphonResult, CycleResult[] cycleResults, double average) {
-							if (average < 0.9) {
+							if (average < 0.8) {
 								return;
 							}
 							
 							StringBuilder newOWLClassName = new StringBuilder();
 							Map<OWLClass, OWLClass> owlClassMap = new HashMap<OWLClass, OWLClass>();
+							List<OWLClass> newClasses = new ArrayList<OWLClass>();
 							OWLClass owlClassA = null;
+							
 							for (int i = 0; i < cycleResults.length; i++) {
-								OWLClass owlClass = getOWLModelManager().getOWLDataFactory().getOWLClass(IRI.create(cycleResults[i].getClassId()));
-								owlClassMap.put(classesInSignatureArray[i], owlClass);
+								OWLClass owlClassRef = getOWLModelManager().getOWLDataFactory().getOWLClass(IRI.create(cycleResults[i].getClassId()));
+								OWLClass owlClassOrigin = getOWLModelManager().getOWLDataFactory().getOWLClass(IRI.create(classesInSignatureStringIDArray[i]));
+								owlClassMap.put(owlClassOrigin, owlClassRef);
 								if (newOWLClassName.length() > 0) {
 									newOWLClassName.append("_");
 								}
-								newOWLClassName.append(owlClass.toStringID());
+								newOWLClassName.append(owlClassRef.toStringID());
 								if (i == 0) {
-									owlClassA = owlClass;
+									owlClassA = owlClassRef;
 								}
+								newClasses.add(owlClassRef);
 							}
 							
 							OWLClass newOWLClass = getOWLModelManager().getOWLDataFactory().getOWLClass(IRI.create(newOWLClassName.toString()));
@@ -422,13 +424,18 @@ public class OWLClassExpressionEditorViewComponent extends AbstractOWLViewCompon
 							
 							OWLAnnotation labelAnnotation = getOWLDataFactory().getOWLAnnotation(
 									getOWLDataFactory().getRDFSLabel(), 
-									getOWLDataFactory().getOWLLiteral(concatLabels(getOWLModelManager().getActiveOntologies(), owlClassMap.values())));
+									getOWLDataFactory().getOWLLiteral(concatLabels(getOWLModelManager().getActiveOntologies(), newClasses)));
 							
 							myManager.addAxiom(myOntology,
 									getOWLDataFactory().getOWLAnnotationAssertionAxiom(newOWLClass.getIRI(), labelAnnotation));
 						}
 						
 					}, classesInSignatureStringIDArray);
+					
+					totalTimeMillis = System.currentTimeMillis() - totalTimeMillis;
+					
+					publish("Total time: " + (totalTimeMillis / 1000) + "s");
+					
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
@@ -438,16 +445,20 @@ public class OWLClassExpressionEditorViewComponent extends AbstractOWLViewCompon
 			private String concatLabels(Set<OWLOntology> ontos, Collection<OWLClass> owlClasses) {
 				StringBuilder result = new StringBuilder();
 				for (OWLClass owlClass : owlClasses) {
-					String label; 
+					String label = null; 
 					for (OWLOntology onto : ontos) {
 						label = getOWLClassLabel(onto, owlClass);
 						if (label != null) {
-							if (result.length() > 0) {
-								result.append("_");
-							}
-							result.append(label);
 							break;
 						}
+					}
+					if (result.length() > 0) {
+						result.append("_");
+					}
+					if (label != null) {
+						result.append(label);
+					} else {
+						result.append(owlClass.getIRI());
 					}
 				}
 				return result.toString();

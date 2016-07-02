@@ -43,6 +43,8 @@ public class GryphonResultUtil {
 				.replaceFirst("organism #", "")
 				.replaceFirst("biological_process #", "")
 				.replaceFirst("cellular_component #", "")
+				.replaceFirst("protein_name #", "")
+				.replaceFirst("\\[Includes:.*", "")
 				.replaceAll("\\[.*?\\]", "").trim();
 	}
 	
@@ -56,7 +58,8 @@ public class GryphonResultUtil {
 		for (int i = 0; i < bindings.length(); i++) {
 			JSONObject binding = bindings.getJSONObject(i);
 			
-			String[] names = JSONObject.getNames(binding);
+			String[] names = sortNames(JSONObject.getNames(binding));
+			names = sortNames(names);
 			if (i == 0) {
 				System.out.println("First result column order: " + Arrays.toString(names));
 			}
@@ -76,6 +79,21 @@ public class GryphonResultUtil {
 		return resultList;
 	}
 	
+	private static String[] sortNames(String[] names) {
+		String[] newOrder = new String[] {"labelx", "labels1", "labels2", "labels3"};
+		String[] sortedNames = new String[names.length];
+		
+		int index = 0;
+		for (String newOrderName : newOrder) {
+			for (String name : names) {
+				if (name.equals(newOrderName)) {
+					sortedNames[index++] = name;
+				}
+			}
+		}
+		return sortedNames;
+	}
+
 	public static List<GryphonResult> readResults() throws Exception {
 		return readResults(defaultJsonFile);
 	}
