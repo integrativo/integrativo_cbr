@@ -30,7 +30,7 @@ public class GryphonConnector implements Connector {
 	
 	private void readSubClasses(String klass) {
 		if (subClassesSet.contains(klass)) {
-			System.out.println(indentation + "Cycle detected! Skipping...");
+//			System.out.println(indentation + "Cycle detected! Skipping...");
 			return;
 		}
 		
@@ -41,13 +41,13 @@ public class GryphonConnector implements Connector {
 			String subClass = subClassesIterator.next();
 			OntClass ontClass = ob.getModel().getOntClass(subClass);
 			String label = ontClass.getLabel(null);
-			System.out.println(indentation + ">> Subclass: " + subClass + " (" + label + ")");
+//			System.out.println(indentation + ">> Subclass: " + subClass + " (" + label + ")");
 			
 			CBRCase cbrCase = new CBRCase();
 			cbrCase.setDescription(new CaseDescription(subClass, label));
 			cbrCaseList.add(cbrCase);
 			
-			System.out.println(indentation + ">> Entering subclasses");
+//			System.out.println(indentation + ">> Entering subclasses");
 			indentation.append("   ");
 			readSubClasses(subClass);
 			indentation.delete(0, 3);

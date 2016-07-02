@@ -1,26 +1,26 @@
 package br.ufpe.cin.integrativocbr;
 
 import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
 
 public class GryphonResultUtil {
 	
-	private static final String defaultJsonFile; 
+	private static final File defaultJsonFile = new File(System.getProperty("user.home") + "/mst/GryphonFramework/integrationExample/results/db_localhost_3306_uniprot.json"); 
 	
-	static {
-		defaultJsonFile = "/results/db_localhost_3306_uniprot.json";
-	}
-	
-	public static String readFile(String resultFile) throws IOException {
+	public static String readFile(File resultFile) throws IOException {
 		StringBuilder result = new StringBuilder();
-		InputStream fileIn = GryphonResultUtil.class.getResource(resultFile).openStream();
+		// InputStream fileIn = GryphonResultUtil.class.getResource(resultFile).openStream();
+		InputStream fileIn = new FileInputStream(resultFile);
 		try {
 			BufferedReader reader = new BufferedReader(new InputStreamReader(fileIn));
 			try {
@@ -46,17 +46,20 @@ public class GryphonResultUtil {
 				.replaceAll("\\[.*?\\]", "").trim();
 	}
 	
-	public static Set<GryphonResult> readResults(String resultFile) throws Exception {
+	public static List<GryphonResult> readResults(File resultFile) throws Exception {
 		JSONObject jsonObj = new JSONObject(readFile(resultFile));
 		JSONObject results = jsonObj.getJSONObject("results");
 		JSONArray bindings = results.getJSONArray("bindings");
-		Set<GryphonResult> resultList = new HashSet<GryphonResult>();
+		List<GryphonResult> resultList = new ArrayList<GryphonResult>();
 
 		System.out.println("List of Cases:");
 		for (int i = 0; i < bindings.length(); i++) {
 			JSONObject binding = bindings.getJSONObject(i);
 			
 			String[] names = JSONObject.getNames(binding);
+			if (i == 0) {
+				System.out.println("First result column order: " + Arrays.toString(names));
+			}
 			if (names != null && names.length > 0) {
 				String[] labels = new String[names.length];
 				for (int l = 0; l < names.length; l++) {
@@ -73,7 +76,7 @@ public class GryphonResultUtil {
 		return resultList;
 	}
 	
-	public static Set<GryphonResult> readResults() throws Exception {
+	public static List<GryphonResult> readResults() throws Exception {
 		return readResults(defaultJsonFile);
 	}
 

@@ -237,18 +237,20 @@ public class OWLClassExpressionEditorViewComponent extends AbstractOWLViewCompon
 			}
 
 			private String includeLabelsAxiomInSparql(String newSparql, Set<OWLClass> owlClasses) {
-				
-//				return "PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>\n" 
-//					+ newSparql.replace("}", "?s1 rdfs:label ?labels1 .\n" +
-//											"?s2 rdfs:label ?labels2 .\n" +
-//											"?s3 rdfs:label ?labels3 .\n" +
-//											"}")
-//							   .replace("SELECT  DISTINCT ?x", "SELECT DISTINCT ?labels1 ?labels2 ?labels3");
-				return "PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>\n" 
-				+ newSparql.replace("}", "?s1 rdfs:label ?labels1 .\n" +
-										"?s2 rdfs:label ?labels2 .\n" +
-										"}")
-						   .replace("SELECT  DISTINCT ?x", "SELECT DISTINCT ?labels1 ?labels2");
+				if (owlClasses.size() == 3) {
+					return "PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>\n" 
+						+ newSparql.replace("}", "?x rdfs:label ?labelx .\n" +
+												"?s2 rdfs:label ?labels2 .\n" +
+												"?s3 rdfs:label ?labels3 .\n" +
+												"} LIMIT 30")
+								   .replace("SELECT  DISTINCT ?x", "SELECT DISTINCT ?labelx ?labels2 ?labels3");
+				} else {
+					return "PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>\n" 
+						+ newSparql.replace("}", "?x rdfs:label ?labelx .\n" +
+											"?s1 rdfs:label ?labels1 .\n" +
+											"} LIMIT 30")
+							   .replace("SELECT  DISTINCT ?x", "SELECT DISTINCT ?labelx ?labels1");
+				}
 			}
 
 			@Override
@@ -343,14 +345,24 @@ public class OWLClassExpressionEditorViewComponent extends AbstractOWLViewCompon
 					publish("\nInitializing CBR...");
 					Set<OWLClass> classesInSignature = newExpression.getClassesInSignature();
 					final OWLClass[] classesInSignatureArray = new OWLClass[classesInSignature.size()];
-					
 					String[] classesInSignatureStringIDArray = new String[classesInSignature.size()];
-					Iterator<OWLClass> classesInSignatureIterator = classesInSignature.iterator();
-					for (int i = classesInSignature.size() - 1; i >= 0; i--) {
-						OWLClass owlClass = classesInSignatureIterator.next();
-						classesInSignatureStringIDArray[i] = owlClass.toStringID();
-						classesInSignatureArray[i] = owlClass;
-					}
+					
+					// Q1 (2)
+//					classesInSignatureStringIDArray[0] = "http://purl.bioontology.org/ontology/NCBITAXON/131567";
+//					classesInSignatureStringIDArray[1] = "http://purl.obolibrary.org/obo/GO_0008150";
+					
+					// Q1
+					classesInSignatureStringIDArray[0] = "http://purl.bioontology.org/ontology/NCBITAXON/131567";
+					classesInSignatureStringIDArray[1] = "http://purl.obolibrary.org/obo/PR_000000001";
+					classesInSignatureStringIDArray[2] = "http://purl.obolibrary.org/obo/GO_0008150";
+					
+					
+//					Iterator<OWLClass> classesInSignatureIterator = classesInSignature.iterator();
+//					for (int i = classesInSignature.size() - 1; i >= 0; i--) {
+//						OWLClass owlClass = classesInSignatureIterator.next();
+//						classesInSignatureStringIDArray[i] = owlClass.toStringID();
+//						classesInSignatureArray[i] = owlClass;
+//					}
 					
 					IntegrativoCBRApplication.executeCBR(new CBREventListener() {
 	
@@ -414,8 +426,6 @@ public class OWLClassExpressionEditorViewComponent extends AbstractOWLViewCompon
 							
 							myManager.addAxiom(myOntology,
 									getOWLDataFactory().getOWLAnnotationAssertionAxiom(newOWLClass.getIRI(), labelAnnotation));
-							
-							
 						}
 						
 					}, classesInSignatureStringIDArray);
@@ -594,7 +604,6 @@ public class OWLClassExpressionEditorViewComponent extends AbstractOWLViewCompon
 								CycleResult[] cycleResults, double average) {
 							publish("Result cycle: " + gryphonResult + ", " + cycleResults + ", " + average);
 						}
-						
 						
 					}, classesIRI);
 					return null;
