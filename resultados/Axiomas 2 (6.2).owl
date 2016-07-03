@@ -1,0 +1,257 @@
+<?xml version="1.0"?>
+
+
+<!DOCTYPE Ontology [
+    <!ENTITY xsd "http://www.w3.org/2001/XMLSchema#" >
+    <!ENTITY xml "http://www.w3.org/XML/1998/namespace" >
+    <!ENTITY rdfs "http://www.w3.org/2000/01/rdf-schema#" >
+    <!ENTITY rdf "http://www.w3.org/1999/02/22-rdf-syntax-ns#" >
+]>
+
+
+<Ontology xmlns="http://www.w3.org/2002/07/owl#"
+     xml:base="http://www.w3.org/2002/07/owl#"
+     xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+     xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+     xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+     xmlns:xml="http://www.w3.org/XML/1998/namespace">
+    <Prefix name="rdf" IRI="http://www.w3.org/1999/02/22-rdf-syntax-ns#"/>
+    <Prefix name="rdfs" IRI="http://www.w3.org/2000/01/rdf-schema#"/>
+    <Prefix name="xsd" IRI="http://www.w3.org/2001/XMLSchema#"/>
+    <Prefix name="owl" IRI="http://www.w3.org/2002/07/owl#"/>
+    <Declaration>
+        <Class IRI="http://purl.bioontology.org/ontology/NCBITAXON/10090"/>
+    </Declaration>
+    <Declaration>
+        <Class IRI="http://purl.obolibrary.org/obo/GO_0009086"/>
+    </Declaration>
+    <Declaration>
+        <Class IRI="http://purl.obolibrary.org/obo/GO_0033477"/>
+    </Declaration>
+    <Declaration>
+        <Class IRI="http://purl.obolibrary.org/obo/GO_0033528"/>
+    </Declaration>
+    <Declaration>
+        <Class IRI="http://purl.obolibrary.org/obo/GO_0046500"/>
+    </Declaration>
+    <Declaration>
+        <Class IRI="http://purl.obolibrary.org/obo/GO_0071267"/>
+    </Declaration>
+    <Declaration>
+        <Class IRI="http://purl.obolibrary.org/obo/NCBITaxon_9606"/>
+    </Declaration>
+    <Declaration>
+        <Class IRI="http://purl.obolibrary.org/obo/PR_000004742"/>
+    </Declaration>
+    <EquivalentClasses>
+        <Class IRI="http://purl.obolibrary.org/obo/GO_0009086_http://purl.obolibrary.org/obo/PR_000004742_http://purl.bioontology.org/ontology/NCBITAXON/10090"/>
+        <ObjectIntersectionOf>
+            <Class IRI="http://purl.obolibrary.org/obo/GO_0009086"/>
+            <ObjectSomeValuesFrom>
+                <ObjectProperty IRI="http://purl.org/biotop/btl2.owl#hasParticipant"/>
+                <Class IRI="http://purl.obolibrary.org/obo/PR_000004742"/>
+            </ObjectSomeValuesFrom>
+            <ObjectSomeValuesFrom>
+                <ObjectProperty IRI="http://purl.org/biotop/btl2.owl#isIncludedIn"/>
+                <Class IRI="http://purl.bioontology.org/ontology/NCBITAXON/10090"/>
+            </ObjectSomeValuesFrom>
+        </ObjectIntersectionOf>
+    </EquivalentClasses>
+    <EquivalentClasses>
+        <Class IRI="http://purl.obolibrary.org/obo/GO_0033477_http://purl.obolibrary.org/obo/PR_000004742_http://purl.bioontology.org/ontology/NCBITAXON/10090"/>
+        <ObjectIntersectionOf>
+            <Class IRI="http://purl.obolibrary.org/obo/GO_0033477"/>
+            <ObjectSomeValuesFrom>
+                <ObjectProperty IRI="http://purl.org/biotop/btl2.owl#hasParticipant"/>
+                <Class IRI="http://purl.obolibrary.org/obo/PR_000004742"/>
+            </ObjectSomeValuesFrom>
+            <ObjectSomeValuesFrom>
+                <ObjectProperty IRI="http://purl.org/biotop/btl2.owl#isIncludedIn"/>
+                <Class IRI="http://purl.bioontology.org/ontology/NCBITAXON/10090"/>
+            </ObjectSomeValuesFrom>
+        </ObjectIntersectionOf>
+    </EquivalentClasses>
+    <EquivalentClasses>
+        <Class IRI="http://purl.obolibrary.org/obo/GO_0033477_http://purl.obolibrary.org/obo/PR_000004742_http://purl.obolibrary.org/obo/NCBITaxon_9606"/>
+        <ObjectIntersectionOf>
+            <Class IRI="http://purl.obolibrary.org/obo/GO_0033477"/>
+            <ObjectSomeValuesFrom>
+                <ObjectProperty IRI="http://purl.org/biotop/btl2.owl#hasParticipant"/>
+                <Class IRI="http://purl.obolibrary.org/obo/PR_000004742"/>
+            </ObjectSomeValuesFrom>
+            <ObjectSomeValuesFrom>
+                <ObjectProperty IRI="http://purl.org/biotop/btl2.owl#isIncludedIn"/>
+                <Class IRI="http://purl.obolibrary.org/obo/NCBITaxon_9606"/>
+            </ObjectSomeValuesFrom>
+        </ObjectIntersectionOf>
+    </EquivalentClasses>
+    <EquivalentClasses>
+        <Class IRI="http://purl.obolibrary.org/obo/GO_0033528_http://purl.obolibrary.org/obo/PR_000004742_http://purl.bioontology.org/ontology/NCBITAXON/10090"/>
+        <ObjectIntersectionOf>
+            <Class IRI="http://purl.obolibrary.org/obo/GO_0033528"/>
+            <ObjectSomeValuesFrom>
+                <ObjectProperty IRI="http://purl.org/biotop/btl2.owl#hasParticipant"/>
+                <Class IRI="http://purl.obolibrary.org/obo/PR_000004742"/>
+            </ObjectSomeValuesFrom>
+            <ObjectSomeValuesFrom>
+                <ObjectProperty IRI="http://purl.org/biotop/btl2.owl#isIncludedIn"/>
+                <Class IRI="http://purl.bioontology.org/ontology/NCBITAXON/10090"/>
+            </ObjectSomeValuesFrom>
+        </ObjectIntersectionOf>
+    </EquivalentClasses>
+    <EquivalentClasses>
+        <Class IRI="http://purl.obolibrary.org/obo/GO_0033528_http://purl.obolibrary.org/obo/PR_000004742_http://purl.obolibrary.org/obo/NCBITaxon_9606"/>
+        <ObjectIntersectionOf>
+            <Class IRI="http://purl.obolibrary.org/obo/GO_0033528"/>
+            <ObjectSomeValuesFrom>
+                <ObjectProperty IRI="http://purl.org/biotop/btl2.owl#hasParticipant"/>
+                <Class IRI="http://purl.obolibrary.org/obo/PR_000004742"/>
+            </ObjectSomeValuesFrom>
+            <ObjectSomeValuesFrom>
+                <ObjectProperty IRI="http://purl.org/biotop/btl2.owl#isIncludedIn"/>
+                <Class IRI="http://purl.obolibrary.org/obo/NCBITaxon_9606"/>
+            </ObjectSomeValuesFrom>
+        </ObjectIntersectionOf>
+    </EquivalentClasses>
+    <EquivalentClasses>
+        <Class IRI="http://purl.obolibrary.org/obo/GO_0046500_http://purl.obolibrary.org/obo/PR_000004742_http://purl.bioontology.org/ontology/NCBITAXON/10090"/>
+        <ObjectIntersectionOf>
+            <Class IRI="http://purl.obolibrary.org/obo/GO_0046500"/>
+            <ObjectSomeValuesFrom>
+                <ObjectProperty IRI="http://purl.org/biotop/btl2.owl#hasParticipant"/>
+                <Class IRI="http://purl.obolibrary.org/obo/PR_000004742"/>
+            </ObjectSomeValuesFrom>
+            <ObjectSomeValuesFrom>
+                <ObjectProperty IRI="http://purl.org/biotop/btl2.owl#isIncludedIn"/>
+                <Class IRI="http://purl.bioontology.org/ontology/NCBITAXON/10090"/>
+            </ObjectSomeValuesFrom>
+        </ObjectIntersectionOf>
+    </EquivalentClasses>
+    <EquivalentClasses>
+        <Class IRI="http://purl.obolibrary.org/obo/GO_0046500_http://purl.obolibrary.org/obo/PR_000004742_http://purl.obolibrary.org/obo/NCBITaxon_9606"/>
+        <ObjectIntersectionOf>
+            <Class IRI="http://purl.obolibrary.org/obo/GO_0046500"/>
+            <ObjectSomeValuesFrom>
+                <ObjectProperty IRI="http://purl.org/biotop/btl2.owl#hasParticipant"/>
+                <Class IRI="http://purl.obolibrary.org/obo/PR_000004742"/>
+            </ObjectSomeValuesFrom>
+            <ObjectSomeValuesFrom>
+                <ObjectProperty IRI="http://purl.org/biotop/btl2.owl#isIncludedIn"/>
+                <Class IRI="http://purl.obolibrary.org/obo/NCBITaxon_9606"/>
+            </ObjectSomeValuesFrom>
+        </ObjectIntersectionOf>
+    </EquivalentClasses>
+    <EquivalentClasses>
+        <Class IRI="http://purl.obolibrary.org/obo/GO_0071267_http://purl.obolibrary.org/obo/PR_000004742_http://purl.bioontology.org/ontology/NCBITAXON/10090"/>
+        <ObjectIntersectionOf>
+            <Class IRI="http://purl.obolibrary.org/obo/GO_0071267"/>
+            <ObjectSomeValuesFrom>
+                <ObjectProperty IRI="http://purl.org/biotop/btl2.owl#hasParticipant"/>
+                <Class IRI="http://purl.obolibrary.org/obo/PR_000004742"/>
+            </ObjectSomeValuesFrom>
+            <ObjectSomeValuesFrom>
+                <ObjectProperty IRI="http://purl.org/biotop/btl2.owl#isIncludedIn"/>
+                <Class IRI="http://purl.bioontology.org/ontology/NCBITAXON/10090"/>
+            </ObjectSomeValuesFrom>
+        </ObjectIntersectionOf>
+    </EquivalentClasses>
+    <EquivalentClasses>
+        <Class IRI="http://purl.obolibrary.org/obo/GO_0071267_http://purl.obolibrary.org/obo/PR_000004742_http://purl.obolibrary.org/obo/NCBITaxon_9606"/>
+        <ObjectIntersectionOf>
+            <Class IRI="http://purl.obolibrary.org/obo/GO_0071267"/>
+            <ObjectSomeValuesFrom>
+                <ObjectProperty IRI="http://purl.org/biotop/btl2.owl#hasParticipant"/>
+                <Class IRI="http://purl.obolibrary.org/obo/PR_000004742"/>
+            </ObjectSomeValuesFrom>
+            <ObjectSomeValuesFrom>
+                <ObjectProperty IRI="http://purl.org/biotop/btl2.owl#isIncludedIn"/>
+                <Class IRI="http://purl.obolibrary.org/obo/NCBITaxon_9606"/>
+            </ObjectSomeValuesFrom>
+        </ObjectIntersectionOf>
+    </EquivalentClasses>
+    <SubClassOf>
+        <Class IRI="http://purl.obolibrary.org/obo/GO_0009086_http://purl.obolibrary.org/obo/PR_000004742_http://purl.bioontology.org/ontology/NCBITAXON/10090"/>
+        <Class IRI="http://purl.obolibrary.org/obo/GO_0009086"/>
+    </SubClassOf>
+    <SubClassOf>
+        <Class IRI="http://purl.obolibrary.org/obo/GO_0033477_http://purl.obolibrary.org/obo/PR_000004742_http://purl.bioontology.org/ontology/NCBITAXON/10090"/>
+        <Class IRI="http://purl.obolibrary.org/obo/GO_0033477"/>
+    </SubClassOf>
+    <SubClassOf>
+        <Class IRI="http://purl.obolibrary.org/obo/GO_0033477_http://purl.obolibrary.org/obo/PR_000004742_http://purl.obolibrary.org/obo/NCBITaxon_9606"/>
+        <Class IRI="http://purl.obolibrary.org/obo/GO_0033477"/>
+    </SubClassOf>
+    <SubClassOf>
+        <Class IRI="http://purl.obolibrary.org/obo/GO_0033528_http://purl.obolibrary.org/obo/PR_000004742_http://purl.bioontology.org/ontology/NCBITAXON/10090"/>
+        <Class IRI="http://purl.obolibrary.org/obo/GO_0033528"/>
+    </SubClassOf>
+    <SubClassOf>
+        <Class IRI="http://purl.obolibrary.org/obo/GO_0033528_http://purl.obolibrary.org/obo/PR_000004742_http://purl.obolibrary.org/obo/NCBITaxon_9606"/>
+        <Class IRI="http://purl.obolibrary.org/obo/GO_0033528"/>
+    </SubClassOf>
+    <SubClassOf>
+        <Class IRI="http://purl.obolibrary.org/obo/GO_0046500_http://purl.obolibrary.org/obo/PR_000004742_http://purl.bioontology.org/ontology/NCBITAXON/10090"/>
+        <Class IRI="http://purl.obolibrary.org/obo/GO_0046500"/>
+    </SubClassOf>
+    <SubClassOf>
+        <Class IRI="http://purl.obolibrary.org/obo/GO_0046500_http://purl.obolibrary.org/obo/PR_000004742_http://purl.obolibrary.org/obo/NCBITaxon_9606"/>
+        <Class IRI="http://purl.obolibrary.org/obo/GO_0046500"/>
+    </SubClassOf>
+    <SubClassOf>
+        <Class IRI="http://purl.obolibrary.org/obo/GO_0071267_http://purl.obolibrary.org/obo/PR_000004742_http://purl.bioontology.org/ontology/NCBITAXON/10090"/>
+        <Class IRI="http://purl.obolibrary.org/obo/GO_0071267"/>
+    </SubClassOf>
+    <SubClassOf>
+        <Class IRI="http://purl.obolibrary.org/obo/GO_0071267_http://purl.obolibrary.org/obo/PR_000004742_http://purl.obolibrary.org/obo/NCBITaxon_9606"/>
+        <Class IRI="http://purl.obolibrary.org/obo/GO_0071267"/>
+    </SubClassOf>
+    <AnnotationAssertion>
+        <AnnotationProperty abbreviatedIRI="rdfs:label"/>
+        <IRI>http://purl.obolibrary.org/obo/GO_0009086_http://purl.obolibrary.org/obo/PR_000004742_http://purl.bioontology.org/ontology/NCBITAXON/10090</IRI>
+        <Literal datatypeIRI="&xsd;string">methionine biosynthetic process_betaine--homocysteine S-methyltransferase 1_Mus musculus</Literal>
+    </AnnotationAssertion>
+    <AnnotationAssertion>
+        <AnnotationProperty abbreviatedIRI="rdfs:label"/>
+        <IRI>http://purl.obolibrary.org/obo/GO_0033477_http://purl.obolibrary.org/obo/PR_000004742_http://purl.bioontology.org/ontology/NCBITAXON/10090</IRI>
+        <Literal datatypeIRI="&xsd;string">S-methylmethionine metabolic process_betaine--homocysteine S-methyltransferase 1_Mus musculus</Literal>
+    </AnnotationAssertion>
+    <AnnotationAssertion>
+        <AnnotationProperty abbreviatedIRI="rdfs:label"/>
+        <IRI>http://purl.obolibrary.org/obo/GO_0033477_http://purl.obolibrary.org/obo/PR_000004742_http://purl.obolibrary.org/obo/NCBITaxon_9606</IRI>
+        <Literal datatypeIRI="&xsd;string">S-methylmethionine metabolic process_betaine--homocysteine S-methyltransferase 1_http://purl.obolibrary.org/obo/NCBITaxon_9606</Literal>
+    </AnnotationAssertion>
+    <AnnotationAssertion>
+        <AnnotationProperty abbreviatedIRI="rdfs:label"/>
+        <IRI>http://purl.obolibrary.org/obo/GO_0033528_http://purl.obolibrary.org/obo/PR_000004742_http://purl.bioontology.org/ontology/NCBITAXON/10090</IRI>
+        <Literal datatypeIRI="&xsd;string">S-methylmethionine cycle_betaine--homocysteine S-methyltransferase 1_Mus musculus</Literal>
+    </AnnotationAssertion>
+    <AnnotationAssertion>
+        <AnnotationProperty abbreviatedIRI="rdfs:label"/>
+        <IRI>http://purl.obolibrary.org/obo/GO_0033528_http://purl.obolibrary.org/obo/PR_000004742_http://purl.obolibrary.org/obo/NCBITaxon_9606</IRI>
+        <Literal datatypeIRI="&xsd;string">S-methylmethionine cycle_betaine--homocysteine S-methyltransferase 1_http://purl.obolibrary.org/obo/NCBITaxon_9606</Literal>
+    </AnnotationAssertion>
+    <AnnotationAssertion>
+        <AnnotationProperty abbreviatedIRI="rdfs:label"/>
+        <IRI>http://purl.obolibrary.org/obo/GO_0046500_http://purl.obolibrary.org/obo/PR_000004742_http://purl.bioontology.org/ontology/NCBITAXON/10090</IRI>
+        <Literal datatypeIRI="&xsd;string">S-adenosylmethionine metabolic process_betaine--homocysteine S-methyltransferase 1_Mus musculus</Literal>
+    </AnnotationAssertion>
+    <AnnotationAssertion>
+        <AnnotationProperty abbreviatedIRI="rdfs:label"/>
+        <IRI>http://purl.obolibrary.org/obo/GO_0046500_http://purl.obolibrary.org/obo/PR_000004742_http://purl.obolibrary.org/obo/NCBITaxon_9606</IRI>
+        <Literal datatypeIRI="&xsd;string">S-adenosylmethionine metabolic process_betaine--homocysteine S-methyltransferase 1_http://purl.obolibrary.org/obo/NCBITaxon_9606</Literal>
+    </AnnotationAssertion>
+    <AnnotationAssertion>
+        <AnnotationProperty abbreviatedIRI="rdfs:label"/>
+        <IRI>http://purl.obolibrary.org/obo/GO_0071267_http://purl.obolibrary.org/obo/PR_000004742_http://purl.bioontology.org/ontology/NCBITAXON/10090</IRI>
+        <Literal datatypeIRI="&xsd;string">L-methionine salvage_betaine--homocysteine S-methyltransferase 1_Mus musculus</Literal>
+    </AnnotationAssertion>
+    <AnnotationAssertion>
+        <AnnotationProperty abbreviatedIRI="rdfs:label"/>
+        <IRI>http://purl.obolibrary.org/obo/GO_0071267_http://purl.obolibrary.org/obo/PR_000004742_http://purl.obolibrary.org/obo/NCBITaxon_9606</IRI>
+        <Literal datatypeIRI="&xsd;string">L-methionine salvage_betaine--homocysteine S-methyltransferase 1_http://purl.obolibrary.org/obo/NCBITaxon_9606</Literal>
+    </AnnotationAssertion>
+</Ontology>
+
+
+
+<!-- Generated by the OWL API (version 3.4.4.owlapi-parent-3.4.2-51-g8d9b9a4) http://owlapi.sourceforge.net -->

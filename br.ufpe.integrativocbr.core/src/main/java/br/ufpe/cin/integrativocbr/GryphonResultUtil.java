@@ -44,6 +44,7 @@ public class GryphonResultUtil {
 				.replaceFirst("biological_process #", "")
 				.replaceFirst("cellular_component #", "")
 				.replaceFirst("protein_name #", "")
+				.replaceFirst("molecule #", "")
 				.replaceFirst("\\[Includes:.*", "")
 				.replaceAll("\\[.*?\\]", "").trim();
 	}

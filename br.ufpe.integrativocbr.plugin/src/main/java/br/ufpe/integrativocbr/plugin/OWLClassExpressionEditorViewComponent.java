@@ -44,6 +44,8 @@ import org.semanticweb.owlapi.model.IRI;
 import org.semanticweb.owlapi.model.OWLAnnotation;
 import org.semanticweb.owlapi.model.OWLClass;
 import org.semanticweb.owlapi.model.OWLClassExpression;
+import org.semanticweb.owlapi.model.OWLDataIntersectionOf;
+import org.semanticweb.owlapi.model.OWLDataRange;
 import org.semanticweb.owlapi.model.OWLEquivalentClassesAxiom;
 import org.semanticweb.owlapi.model.OWLException;
 import org.semanticweb.owlapi.model.OWLLiteral;
@@ -210,10 +212,18 @@ public class OWLClassExpressionEditorViewComponent extends AbstractOWLViewCompon
 					Set<OWLClassExpression> classExprSet, Map<OWLClass, OWLClass> owlClassMap) {
 				Set<OWLClassExpression> newClassExprSet = new HashSet<OWLClassExpression>();
 				for (OWLClassExpression classExpr : classExprSet) {
-					
 					if (classExpr instanceof OWLObjectSomeValuesFrom) {
 						OWLObjectSomeValuesFrom someValuesProp = ((OWLObjectSomeValuesFrom) classExpr);
-						OWLClass newFiller = owlClassMap.get(someValuesProp.getFiller());
+						OWLClassExpression filler = someValuesProp.getFiller();
+						OWLClassExpression newFiller = null;
+						
+						if (filler instanceof OWLClass) {
+							newFiller = owlClassMap.get(someValuesProp.getFiller());
+						} else if (filler instanceof OWLObjectIntersectionOf){
+							newFiller = (OWLClassExpression) getOWLDataFactory().getOWLObjectIntersectionOf(
+									replaceClasses(filler.asConjunctSet(), owlClassMap));
+						}
+						
 						classExpr = getOWLDataFactory().getOWLObjectSomeValuesFrom(
 								someValuesProp.getProperty(), newFiller);
 					}
@@ -315,8 +325,8 @@ public class OWLClassExpressionEditorViewComponent extends AbstractOWLViewCompon
 						publish("Including labels in SPARQL:");
 						publish(newSparql);
 						
-						publish("Querying Gryphon...");
-						// Gryphon.query(newSparql, ResultFormat.JSON);
+						publish("Querying Gryphon... ") ;
+						Gryphon.query(newSparql, ResultFormat.JSON);
 					
 						File resultFolder = Gryphon.getResultFolder();
 						File resultFile = new File(resultFolder, "db_localhost_3306_uniprot.json");
@@ -357,11 +367,23 @@ public class OWLClassExpressionEditorViewComponent extends AbstractOWLViewCompon
 //					classesInSignatureStringIDArray[0] = "http://purl.bioontology.org/ontology/NCBITAXON/131567";
 //					classesInSignatureStringIDArray[1] = "http://purl.obolibrary.org/obo/GO_0008150";
 					
-					// Q1
-					classesInSignatureStringIDArray[0] = "http://purl.obolibrary.org/obo/GO_0008150";
-					classesInSignatureStringIDArray[1] = "http://purl.obolibrary.org/obo/PR_000000001";
-					classesInSignatureStringIDArray[2] = "http://purl.bioontology.org/ontology/NCBITAXON/131567";
+					// Q1 (6.2)
+//					classesInSignatureStringIDArray[0] = "http://purl.obolibrary.org/obo/GO_0008150";
+//					classesInSignatureStringIDArray[1] = "http://purl.obolibrary.org/obo/PR_000000001";
+//					classesInSignatureStringIDArray[2] = "http://purl.bioontology.org/ontology/NCBITAXON/131567";
 
+					// Q2 (6.3)
+//					classesInSignatureStringIDArray[0] = "http://purl.obolibrary.org/obo/PR_000000001";
+//					classesInSignatureStringIDArray[1] = "http://purl.bioontology.org/ontology/NCBITAXON/131567";
+					
+					// Q3 (6.9)
+//					classesInSignatureStringIDArray[0] = "http://purl.obolibrary.org/obo/CHEBI_23367";
+//					classesInSignatureStringIDArray[1] = "http://purl.bioontology.org/ontology/NCBITAXON/131567";
+					
+					// Q4 (6.12)
+					classesInSignatureStringIDArray[0] = "http://purl.bioontology.org/ontology/NCBITAXON/131567";
+					classesInSignatureStringIDArray[1] = "http://purl.obolibrary.org/obo/PR_000000001";
+					classesInSignatureStringIDArray[2] = "http://purl.obolibrary.org/obo/GO_0008150";
 					IntegrativoCBRApplication.executeCBR(new CBREventListener() {
 	
 						@Override
